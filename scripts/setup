@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Installing Python dependencies..."
+pip install -r requirements.txt
+echo "Installing frontend dependencies..."
+cd custom_components/ha_home_maintenance/panel
+npm install
+echo "Setup complete!"

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Building frontend..."
+cd custom_components/ha_home_maintenance/panel
+npm run build
+echo "Build complete. Copy custom_components/ha_home_maintenance to your HA config/custom_components/ directory."

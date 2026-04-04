@@ -1,0 +1,15 @@
+reset_last_performed:
+  name: Reset last performed
+  description: Reset the last performed date for a maintenance task.
+  target:
+    entity:
+      integration: ha_home_maintenance
+      domain: binary_sensor
+  fields:
+    date:
+      name: Date
+      description: The date to set as last performed. Defaults to today.
+      required: false
+      example: "2024-01-15"
+      selector:
+        date:

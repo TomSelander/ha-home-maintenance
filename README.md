@@ -1,0 +1,167 @@
+# Home Maintenance Pro for Home Assistant
+
+Track recurring home maintenance tasks with a beautiful sidebar panel built right into your Home Assistant instance.
+
+---
+
+## Features
+
+- **Full CRUD operations** — create, read, update, and delete maintenance tasks
+- **Template library** — 50+ pre-canned tasks covering HVAC, plumbing, electrical, exterior, appliances, and more
+- **CSV import/export** — bulk-import tasks from a CSV file via the Browse Templates page, or export all tasks to CSV from the task list
+- **Responsive table view** — sort tasks by name, interval, due date, labels, or status
+- **Search and filter** — text search across task titles and descriptions, plus label-based filtering
+- **Label support** — assign Home Assistant labels to tasks and view them in a dedicated column
+- **Overdue notifications** — enable a per-task toggle to receive a persistent notification automatically when a task becomes overdue
+- **Binary sensors for overdue detection** — one sensor per task and one global "any overdue" sensor for use in automations and dashboards
+- **NFC tag support** — scan an NFC tag to instantly mark a task complete
+- **Configurable sidebar** — choose a custom panel title and optionally restrict access to admins only
+- **Integration icon** — branded icon displayed in the Home Assistant integrations page
+
+---
+
+## Installation
+
+### HACS (Recommended)
+
+1. Open HACS in your Home Assistant instance.
+2. Go to **Integrations**.
+3. Click the three-dot menu in the top-right corner and select **Custom repositories**.
+4. Add `https://github.com/TomSelander/ha-home-maintenance` as an **Integration**.
+5. Search for **Home Maintenance Pro** and click **Download**.
+6. Restart Home Assistant.
+
+### Manual Installation
+
+1. Download the latest release from the [GitHub releases page](https://github.com/TomSelander/ha-home-maintenance/releases).
+2. Copy the `custom_components/ha_home_maintenance` directory into your Home Assistant `config/custom_components/` directory.
+3. Restart Home Assistant.
+
+---
+
+## Configuration
+
+1. Go to **Settings > Devices & Services**.
+2. Click **Add Integration**.
+3. Search for and select **Home Maintenance Pro**.
+4. Follow the setup wizard.
+
+### Options
+
+After the integration is set up, you can adjust its options at any time via **Settings > Devices & Services > Home Maintenance Pro > Configure**:
+
+| Option | Default | Description |
+|---|---|---|
+| `admin_only` | `false` | Restrict the sidebar panel to admin users only |
+| `sidebar_title` | `"Home Maintenance Pro"` | The title displayed in the sidebar navigation |
+
+---
+
+## Usage
+
+### Creating a Task
+
+1. Open the **Home Maintenance Pro** panel from the sidebar.
+2. Click **Add Task**.
+3. Fill in the task name, interval (value and type: days/weeks/months), and an optional description.
+4. Optionally set the **Last Performed** date if the task has been done before.
+5. Click **Save**.
+
+### Using the Template Library
+
+1. Click **Browse Templates** from the task list.
+2. Browse or search the 50+ pre-canned tasks.
+3. Click a template to pre-fill the form, then adjust as needed and click **Save**.
+
+### Importing Tasks from CSV
+
+1. Click **Browse Templates** from the task list.
+2. Click the **Import CSV** button.
+3. Select a `.csv` file. The required column is `title`; optional columns are `description`, `interval_value`, `interval_type`, `last_performed`, and `icon`.
+4. Review the preview table and click **Import** to create all tasks.
+
+Example CSV:
+
+```csv
+title,description,interval_value,interval_type,last_performed,icon
+Replace HVAC Filter,Change the air filter,90,days,2026-01-15,mdi:air-filter
+Clean Gutters,Remove debris from gutters,180,days,,mdi:home-roof
+```
+
+### Exporting Tasks to CSV
+
+1. From the task list, click **Export CSV**.
+2. A `home_maintenance_tasks.csv` file will be downloaded containing all tasks with their title, description, interval, last performed date, icon, labels, and notification setting.
+
+### Searching and Filtering
+
+- Use the **search box** at the top of the task list to filter by title or description.
+- Use the **label dropdown** to show only tasks with a specific Home Assistant label.
+
+### Editing a Task
+
+1. Click the pencil icon on any row in the task table.
+2. Modify any fields and click **Save**.
+
+### Completing a Task
+
+- Click the checkmark icon on a task row to mark it complete. The last performed date is set to today and the next due date advances by the task's interval.
+- Alternatively, scan the NFC tag associated with the task (see NFC setup below).
+
+### Overdue Notifications
+
+Each task has a **Notify when overdue** toggle on the create/edit form. When enabled, a persistent notification is created in Home Assistant as soon as the task transitions to overdue status. The notification is automatically deduplicated per task so you only see one at a time.
+
+### NFC Tags
+
+1. Edit a task and note its **Task ID** displayed in the form.
+2. Write the following URL to an NFC tag using any NFC writing app:
+
+   ```
+   https://your-ha-instance.local/api/ha_home_maintenance/complete/<task_id>
+   ```
+
+3. Scanning the tag will mark the task complete immediately.
+
+---
+
+## Automations
+
+Each task exposes a `binary_sensor` entity with a name derived from the task. The sensor is `on` when the task is overdue and `off` when it is current.
+
+A global sensor `binary_sensor.home_maintenance_any_overdue` is `on` whenever at least one task is overdue.
+
+### Example Automation
+
+```yaml
+automation:
+  alias: "Notify when maintenance is overdue"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.home_maintenance_any_overdue
+      to: "on"
+  action:
+    - service: notify.mobile_app_your_phone
+      data:
+        title: "Home Maintenance Pro Overdue"
+        message: "One or more home maintenance tasks need attention."
+```
+
+---
+
+## Screenshots
+
+![Home Maintenance Pro task list](screenshots/ha-1.png)
+
+---
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the repository.
+2. Run `scripts/setup` to install all dependencies.
+3. Make your changes.
+4. Run `scripts/lint` to check Python code style.
+5. Run `scripts/develop` to build the frontend bundle.
+6. Submit a pull request.

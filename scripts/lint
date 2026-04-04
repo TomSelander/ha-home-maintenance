@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Linting Python..."
+ruff check custom_components/ha_home_maintenance/
+echo "Python linting passed!"
