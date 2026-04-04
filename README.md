@@ -7,7 +7,7 @@ Track recurring home maintenance tasks with a beautiful sidebar panel built righ
 ## Features
 
 - **Full CRUD operations** — create, read, update, and delete maintenance tasks
-- **Template library** — 50+ pre-canned tasks covering HVAC, plumbing, electrical, exterior, appliances, and more
+- **Template library** — 90+ pre-built tasks covering HVAC, plumbing, electrical, exterior, appliances, and more
 - **CSV import/export** — bulk-import tasks from a CSV file via the Browse Templates page, or export all tasks to CSV from the task list
 - **Responsive table view** — sort tasks by name, interval, due date, labels, or status
 - **Search and filter** — text search across task titles and descriptions, plus label-based filtering
@@ -70,7 +70,7 @@ After the integration is set up, you can adjust its options at any time via **Se
 ### Using the Template Library
 
 1. Click **Browse Templates** from the task list.
-2. Browse or search the 50+ pre-canned tasks.
+2. Browse or search the 90+ pre-built tasks.
 3. Click a template to pre-fill the form, then adjust as needed and click **Save**.
 
 ### Importing Tasks from CSV
