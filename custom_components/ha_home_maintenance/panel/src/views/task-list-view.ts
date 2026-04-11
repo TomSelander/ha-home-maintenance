@@ -191,8 +191,8 @@ export class TaskListView extends LitElement {
           cmp = this._intervalToDays(a) - this._intervalToDays(b);
           break;
         case "last_performed": {
-          const aDate = a.last_performed ? new Date(a.last_performed).getTime() : 0;
-          const bDate = b.last_performed ? new Date(b.last_performed).getTime() : 0;
+          const aDate = a.last_performed ? this._parseLocalDate(a.last_performed).getTime() : 0;
+          const bDate = b.last_performed ? this._parseLocalDate(b.last_performed).getTime() : 0;
           cmp = aDate - bDate;
           break;
         }
@@ -238,7 +238,7 @@ export class TaskListView extends LitElement {
     if (!task.last_performed) {
       return 0; // Never performed sorts first (most urgent)
     }
-    const lastDate = new Date(task.last_performed);
+    const lastDate = this._parseLocalDate(task.last_performed);
     const dueDate = new Date(lastDate);
     switch (task.interval_type) {
       case "days":
@@ -306,11 +306,17 @@ export class TaskListView extends LitElement {
     return `${task.interval_value} ${type.toLowerCase()}`;
   }
 
+  private _parseLocalDate(dateStr: string): Date {
+    // Treat YYYY-MM-DD as local midnight, not UTC midnight
+    const [year, month, day] = dateStr.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }
+
   private _formatDate(dateStr: string | null): string {
     if (!dateStr) {
       return localize("never", this.hass?.language);
     }
-    return new Date(dateStr).toLocaleDateString();
+    return this._parseLocalDate(dateStr).toLocaleDateString();
   }
 
   private _sort(column: SortColumn): void {

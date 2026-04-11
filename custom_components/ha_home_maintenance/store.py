@@ -5,11 +5,11 @@ from __future__ import annotations
 import logging
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
 from typing import Any
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.storage import Store
+from homeassistant.util import dt as dt_util
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -108,7 +108,7 @@ class TaskStore:
         task = self._tasks.get(task_id)
         if task is None:
             return None
-        task.last_performed = datetime.now().strftime("%Y-%m-%d")
+        task.last_performed = dt_util.now().strftime("%Y-%m-%d")
         await self.async_save()
         self._notify_listeners()
         return task

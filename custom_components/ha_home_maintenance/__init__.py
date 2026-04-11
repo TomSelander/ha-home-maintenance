@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.util import dt as dt_util
 
 _LOGGER = logging.getLogger(__name__)
 from homeassistant.helpers import device_registry as dr
@@ -118,23 +118,28 @@ def _register_services(hass: HomeAssistant, store: TaskStore) -> None:
 
     async def handle_reset_last_performed(call: ServiceCall) -> None:
         try:
-            entity_id = call.data.get("entity_id")
+            # entity_id may come from call.target (newer HA) or call.data (older HA)
+            target = getattr(call, "target", None) or {}
+            entity_ids = target.get("entity_id") or call.data.get("entity_id")
+            if isinstance(entity_ids, str):
+                entity_ids = [entity_ids]
             date_str = call.data.get(
-                "date", datetime.now().strftime("%Y-%m-%d")
+                "date", dt_util.now().strftime("%Y-%m-%d")
             )
 
             # Find task by entity unique_id
             ent_reg = er.async_get(hass)
-            ent_entry = ent_reg.async_get(entity_id)
-            if ent_entry and ent_entry.unique_id:
-                task_id = ent_entry.unique_id.replace(f"{DOMAIN}_", "")
-                await store.async_update_task(
-                    task_id, {"last_performed": date_str}
-                )
+            for entity_id in (entity_ids or []):
+                ent_entry = ent_reg.async_get(entity_id)
+                if ent_entry and ent_entry.unique_id:
+                    task_id = ent_entry.unique_id.replace(f"{DOMAIN}_", "")
+                    await store.async_update_task(
+                        task_id, {"last_performed": date_str}
+                    )
         except Exception:
             _LOGGER.exception(
                 "Error resetting last_performed for %s",
-                call.data.get("entity_id"),
+                (getattr(call, "target", None) or {}).get("entity_id") or call.data.get("entity_id"),
             )
 
     hass.services.async_register(

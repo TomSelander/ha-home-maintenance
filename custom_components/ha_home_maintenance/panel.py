@@ -19,9 +19,13 @@ async def async_register_panel(
     admin_only: bool = True,
 ) -> None:
     """Register the custom panel in the HA sidebar."""
-    await hass.http.async_register_static_paths(
-        [StaticPathConfig(f"/api/panel_custom/{DOMAIN}", PANEL_PATH, False)]
-    )
+    # Static paths cannot be unregistered (aiohttp limitation), so only register once.
+    static_path_key = f"{DOMAIN}_static_path_registered"
+    if not hass.data.get(static_path_key):
+        await hass.http.async_register_static_paths(
+            [StaticPathConfig(f"/api/panel_custom/{DOMAIN}", PANEL_PATH, False)]
+        )
+        hass.data[static_path_key] = True
 
     # Remove existing panel before re-registering (handles reloads)
     try:
