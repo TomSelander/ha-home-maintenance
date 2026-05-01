@@ -16,7 +16,7 @@ export class TaskListView extends LitElement {
   @state() private _tasks: Task[] = [];
   @state() private _labels: Label[] = [];
   @state() private _searchQuery = "";
-  @state() private _selectedLabel = "";
+  @state() private _selectedLabels: Set<string> = new Set();
   @state() private _sortColumn: SortColumn = "title";
   @state() private _sortDirection: SortDirection = "asc";
   @state() private _loading = true;
@@ -169,9 +169,9 @@ export class TaskListView extends LitElement {
           (t.description && t.description.toLowerCase().includes(query))
       );
     }
-    if (this._selectedLabel) {
+    if (this._selectedLabels.size > 0) {
       tasks = tasks.filter(
-        (t) => t.labels && t.labels.includes(this._selectedLabel)
+        (t) => t.labels && t.labels.some((id) => this._selectedLabels.has(id))
       );
     }
     return tasks;
@@ -376,8 +376,20 @@ export class TaskListView extends LitElement {
     this._searchQuery = (e.target as HTMLInputElement).value;
   }
 
-  private _handleLabelFilter(e: Event): void {
-    this._selectedLabel = (e.target as HTMLSelectElement).value;
+  private _toggleLabelFilter(labelId: string): void {
+    const updated = new Set(this._selectedLabels);
+    if (updated.has(labelId)) {
+      updated.delete(labelId);
+    } else {
+      updated.add(labelId);
+    }
+    this._selectedLabels = updated;
+    this.requestUpdate();
+  }
+
+  private _clearLabelFilters(): void {
+    this._selectedLabels = new Set();
+    this.requestUpdate();
   }
 
   private _handleSortChange(e: Event): void {
@@ -468,12 +480,19 @@ export class TaskListView extends LitElement {
         />
         ${availableLabels.length > 0
           ? html`
-              <select .value=${this._selectedLabel} @change=${this._handleLabelFilter}>
-                <option value="">${localize("all_labels", this.hass?.language)}</option>
+              <div class="filter-chips">
                 ${availableLabels.map(
-                  (l) => html`<option value=${l.label_id}>${l.name}</option>`
+                  (l) => html`
+                    <button
+                      class="filter-chip ${this._selectedLabels.has(l.label_id) ? "active" : ""}"
+                      @click=${() => this._toggleLabelFilter(l.label_id)}
+                    >${l.name}</button>
+                  `
                 )}
-              </select>
+                ${this._selectedLabels.size > 0
+                  ? html`<button class="filter-chip clear-chip" @click=${this._clearLabelFilters}>${localize("clear", this.hass?.language)}</button>`
+                  : nothing}
+              </div>
             `
           : nothing}
         <select class="sort-select" @change=${this._handleSortChange}>

@@ -428,6 +428,51 @@ export const sharedStyles = css`
     white-space: nowrap;
   }
 
+  /* Filter chips */
+  .filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    border: none;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .filter-chip.active {
+    background: var(--primary-color);
+    color: var(--text-primary-color, #fff);
+  }
+
+  .filter-chip:not(.active) {
+    background: var(--secondary-background-color);
+    color: var(--primary-text-color);
+    border: 1px solid var(--divider-color);
+  }
+
+  .filter-chip:not(.active):hover {
+    background: var(--table-row-background-color, rgba(0, 0, 0, 0.08));
+  }
+
+  .filter-chip.clear-chip {
+    background: transparent;
+    color: var(--secondary-text-color);
+    border: 1px solid var(--divider-color);
+  }
+
+  .filter-chip.clear-chip:hover {
+    background: var(--secondary-background-color);
+  }
+
   /* Sort indicator */
   .sort-indicator {
     font-size: 10px;

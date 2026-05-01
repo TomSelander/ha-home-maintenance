@@ -10,7 +10,7 @@ Track recurring home maintenance tasks with a beautiful sidebar panel built righ
 - **Template library** — 90+ pre-built tasks covering HVAC, plumbing, electrical, exterior, appliances, and more
 - **CSV import/export** — bulk-import tasks from a CSV file via the Browse Templates page, or export all tasks to CSV from the task list
 - **Responsive table view** — sort tasks by name, interval, due date, labels, or status
-- **Search and filter** — text search across task titles and descriptions, plus label-based filtering
+- **Search and filter** — text search across task titles and descriptions, plus multi-label filtering with clickable chips (OR logic — tasks matching any selected label are shown)
 - **Label support** — assign Home Assistant labels to tasks and view them in a dedicated column
 - **Overdue notifications** — enable a per-task toggle to receive a persistent notification automatically when a task becomes overdue
 - **Binary sensors for overdue detection** — one sensor per task and one global "any overdue" sensor for use in automations and dashboards
@@ -138,7 +138,7 @@ Drain Furnace Trap,Annual drainage of condensation trap,365,days,2025-01-20,mdi:
 ### Searching and Filtering
 
 - Use the **search box** at the top of the task list to filter by title or description.
-- Use the **label dropdown** to show only tasks with a specific Home Assistant label.
+- Click **label chips** below the search box to filter by one or more Home Assistant labels. Tasks matching any selected label are shown (OR logic). Click a selected chip again to deselect it, or use the **Clear** button to reset all label filters.
 
 ### Editing a Task
 
