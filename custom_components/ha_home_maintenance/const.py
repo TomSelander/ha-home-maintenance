@@ -4,7 +4,7 @@ from __future__ import annotations
 
 DOMAIN = "ha_home_maintenance"
 NAME = "Home Maintenance Pro"
-VERSION = "1.3.0"
+VERSION = "1.3.1"
 
 # Panel constants
 PANEL_URL = "/api/panel_custom/ha_home_maintenance"
