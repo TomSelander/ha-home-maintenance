@@ -88,6 +88,48 @@ Replace HVAC Filter,Change the air filter,90,days,2026-01-15,mdi:air-filter
 Clean Gutters,Remove debris from gutters,180,days,,mdi:home-roof
 ```
 
+### Migrating from Legacy Integration
+
+If you were using the original "home_maintenance" integration (or a fork of it), you can migrate all your existing tasks using the CSV import feature.
+
+#### Migration Steps
+
+1. **Export your legacy data**
+   - Locate your legacy integration's storage file at `config/.storage/home_maintenance`
+   - Open it in a text editor and review your task data
+
+2. **Create a CSV file**
+   - Create a new `.csv` file with the following columns: `title`, `description`, `interval_value`, `interval_type`, `last_performed`, `icon`
+
+3. **Map legacy fields to CSV columns**
+   - `name` → `title`
+   - `frequency` or `frequency_value` → `interval_value`
+   - `frequency_type` or `frequency_unit` → `interval_type` (use `days`, `weeks`, or `months`)
+   - `last_done` or `last_completed` → `last_performed` (format: `YYYY-MM-DD`)
+   - `icon` → `icon` (e.g., `mdi:air-filter`)
+   - Any other notes → `description`
+
+4. **Import via the UI**
+   - Go to **Browse Templates** → **Import CSV**
+   - Upload your CSV file
+   - Review the preview to ensure all fields are correct
+   - Click **Import** to create all tasks
+
+#### Example Migration CSV
+
+```csv
+title,description,interval_value,interval_type,last_performed,icon
+Replace HVAC Filter,Change the air filter,90,days,2026-01-15,mdi:air-filter
+Clean Gutters,Remove debris from gutters,180,days,2026-02-10,mdi:home-roof
+Drain Furnace Trap,Annual drainage of condensation trap,365,days,2025-01-20,mdi:water-pump-off
+```
+
+#### Important Notes
+
+- **Additive import** — The import will not delete your existing tasks. Review and clean up duplicates if needed.
+- **Interval format** — The `interval_value` should be a number (e.g., 90, 180, 365) and `interval_type` must be `days`, `weeks`, or `months`.
+- **Date format** — Use `YYYY-MM-DD` format for `last_performed` dates. Leave blank if the date is unknown.
+
 ### Exporting Tasks to CSV
 
 1. From the task list, click **Export CSV**.
