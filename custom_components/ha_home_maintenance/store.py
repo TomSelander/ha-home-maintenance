@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import uuid
 from dataclasses import asdict, dataclass, field
@@ -31,6 +32,8 @@ class HomeMaintenanceTask:
     icon: str = "mdi:toolbox"
     labels: list[str] = field(default_factory=list)
     notify_when_overdue: bool = False
+    track_history: bool = False
+    completion_history: list[str] = field(default_factory=list)
 
 
 class TaskStore:
@@ -109,6 +112,8 @@ class TaskStore:
         if task is None:
             return None
         task.last_performed = dt_util.now().strftime("%Y-%m-%d")
+        if task.track_history:
+            task.completion_history.append(dt_util.now().isoformat())
         await self.async_save()
         self._notify_listeners()
         return task
@@ -128,10 +133,8 @@ class TaskStore:
 
     def remove_listener(self, listener: Any) -> None:
         """Unregister a previously registered listener."""
-        try:
+        with contextlib.suppress(ValueError):
             self._listeners.remove(listener)
-        except ValueError:
-            pass
 
     def _notify_listeners(self) -> None:
         """Call all registered listeners."""

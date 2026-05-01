@@ -11,6 +11,8 @@ export interface Task {
   icon: string;
   labels: string[];
   notify_when_overdue: boolean;
+  track_history: boolean;
+  completion_history: string[];
 }
 
 export interface TaskTemplate {

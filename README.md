@@ -13,6 +13,7 @@ Track recurring home maintenance tasks with a beautiful sidebar panel built righ
 - **Search and filter** — text search across task titles and descriptions, plus multi-label filtering with clickable chips (OR logic — tasks matching any selected label are shown)
 - **Label support** — assign Home Assistant labels to tasks and view them in a dedicated column
 - **Overdue notifications** — enable a per-task toggle to receive a persistent notification automatically when a task becomes overdue
+- **Completion history** — opt-in per-task tracking of every completion timestamp
 - **Binary sensors for overdue detection** — one sensor per task and one global "any overdue" sensor for use in automations and dashboards
 - **NFC tag support** — scan an NFC tag to instantly mark a task complete
 - **Configurable sidebar** — choose a custom panel title and optionally restrict access to admins only
@@ -153,6 +154,10 @@ Drain Furnace Trap,Annual drainage of condensation trap,365,days,2025-01-20,mdi:
 ### Overdue Notifications
 
 Each task has a **Notify when overdue** toggle on the create/edit form. When enabled, a persistent notification is created in Home Assistant as soon as the task transitions to overdue status. The notification is automatically deduplicated per task so you only see one at a time.
+
+### Completion History
+
+Each task has a **Track completion history** toggle on the create/edit form. It is off by default. When enabled, every time a task is marked complete a timestamp is recorded. When editing a task with history tracking on, the edit form shows a **Completion History** section listing the most recent 20 completions (newest first). The binary sensor for that task also exposes `completion_count` and `last_completed` attributes for use in automations and dashboards.
 
 ### NFC Tags
 

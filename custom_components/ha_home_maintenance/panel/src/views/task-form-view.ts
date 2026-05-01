@@ -21,6 +21,8 @@ export class TaskFormView extends LitElement {
   @state() private _icon = "mdi:toolbox";
   @state() private _labels: string[] = [];
   @state() private _notifyWhenOverdue = false;
+  @state() private _trackHistory = false;
+  @state() private _completionHistory: string[] = [];
   @state() private _loading = false;
   @state() private _showAdvanced = false;
   @state() private _tags: any[] = [];
@@ -130,6 +132,8 @@ export class TaskFormView extends LitElement {
       this._icon = task.icon || "mdi:toolbox";
       this._labels = task.labels || [];
       this._notifyWhenOverdue = task.notify_when_overdue || false;
+      this._trackHistory = task.track_history || false;
+      this._completionHistory = task.completion_history || [];
     } catch (err) {
       console.error("Failed to load task:", err);
     }
@@ -175,6 +179,10 @@ export class TaskFormView extends LitElement {
     this._notifyWhenOverdue = (e.target as HTMLInputElement).checked;
   }
 
+  private _handleTrackHistoryToggle(e: Event): void {
+    this._trackHistory = (e.target as HTMLInputElement).checked;
+  }
+
   private _toggleAdvanced(): void {
     this._showAdvanced = !this._showAdvanced;
   }
@@ -206,6 +214,7 @@ export class TaskFormView extends LitElement {
         icon: this._icon || "mdi:toolbox",
         labels: this._labels,
         notify_when_overdue: this._notifyWhenOverdue,
+        track_history: this._trackHistory,
       };
 
       if (this.taskId) {
@@ -326,6 +335,33 @@ export class TaskFormView extends LitElement {
               ${localize("notify_when_overdue", this.hass?.language)}
             </label>
           </div>
+
+          <div class="form-field">
+            <label class="toggle-label">
+              <input
+                type="checkbox"
+                .checked=${this._trackHistory}
+                @change=${this._handleTrackHistoryToggle}
+              />
+              ${localize("track_history", this.hass?.language)}
+            </label>
+          </div>
+
+          ${isEdit && (this._trackHistory || this._completionHistory.length > 0)
+            ? html`
+                <div class="history-section">
+                  <h3>${localize("completion_history", this.hass?.language)}</h3>
+                  ${this._completionHistory.length > 0
+                    ? html`<ul class="history-list">
+                        ${this._completionHistory.slice().reverse().slice(0, 20).map(
+                          (date) => html`<li>${new Date(date).toLocaleString()}</li>`
+                        )}
+                      </ul>`
+                    : html`<p class="history-empty">${localize("no_history", this.hass?.language)}</p>`
+                  }
+                </div>
+              `
+            : nothing}
 
           <div class="expansion-panel">
             <div class="expansion-header" @click=${this._toggleAdvanced}>

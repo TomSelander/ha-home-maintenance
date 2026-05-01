@@ -6,8 +6,6 @@ import logging
 from datetime import datetime, timedelta
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
-
-_LOGGER = logging.getLogger(__name__)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
@@ -15,6 +13,8 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, NAME, VERSION
 from .store import HomeMaintenanceTask, TaskStore
+
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
@@ -121,6 +121,9 @@ class HomeMaintenanceSensor(BinarySensorEntity):
             "interval": f"{task.interval_value} {task.interval_type}",
             "icon": task.icon,
             "tag_id": task.tag_id,
+            "track_history": task.track_history,
+            "completion_count": len(task.completion_history) if task.track_history else None,
+            "last_completed": task.completion_history[-1] if task.track_history and task.completion_history else None,
         }
 
     @property

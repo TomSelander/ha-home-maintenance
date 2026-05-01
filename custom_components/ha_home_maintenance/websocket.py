@@ -102,6 +102,7 @@ async def ws_get_task(
         vol.Optional("labels", default=[]): [str],
         vol.Optional("last_performed"): vol.Any(str, None),
         vol.Optional("notify_when_overdue", default=False): bool,
+        vol.Optional("track_history", default=False): bool,
     }
 )
 @websocket_api.async_response
@@ -123,6 +124,7 @@ async def ws_add_task(
         "icon": msg.get("icon", "mdi:toolbox"),
         "labels": msg.get("labels", []),
         "notify_when_overdue": msg.get("notify_when_overdue", False),
+        "track_history": msg.get("track_history", False),
     }
     if "tag_id" in msg:
         task_data["tag_id"] = msg["tag_id"]
@@ -148,6 +150,7 @@ async def ws_add_task(
         vol.Optional("icon"): str,
         vol.Optional("labels"): [str],
         vol.Optional("notify_when_overdue"): bool,
+        vol.Optional("track_history"): bool,
     }
 )
 @websocket_api.async_response
@@ -172,6 +175,7 @@ async def ws_update_task(
         "icon",
         "labels",
         "notify_when_overdue",
+        "track_history",
     ):
         if key in msg:
             task_data[key] = msg[key]

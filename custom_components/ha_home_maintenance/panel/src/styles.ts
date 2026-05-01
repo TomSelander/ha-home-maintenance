@@ -473,6 +473,37 @@ export const sharedStyles = css`
     background: var(--secondary-background-color);
   }
 
+  /* Completion history section */
+  .history-section {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--divider-color);
+  }
+
+  .history-section h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 12px;
+  }
+
+  .history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .history-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--divider-color);
+    font-size: 14px;
+    color: var(--primary-text-color);
+  }
+
+  .history-empty {
+    color: var(--secondary-text-color);
+    font-style: italic;
+  }
+
   /* Sort indicator */
   .sort-indicator {
     font-size: 10px;

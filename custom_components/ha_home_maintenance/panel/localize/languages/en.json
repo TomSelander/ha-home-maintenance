@@ -50,5 +50,8 @@
   "notify_when_overdue": "Notify when overdue",
   "export_csv": "Export CSV",
   "sort_by": "Sort by",
-  "clear": "Clear"
+  "clear": "Clear",
+  "track_history": "Track completion history",
+  "completion_history": "Completion History",
+  "no_history": "No completion history yet."
 }
