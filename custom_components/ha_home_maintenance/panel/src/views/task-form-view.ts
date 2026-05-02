@@ -1,6 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { Task, TaskTemplate, HomeAssistant, IntervalType, Label } from "../types";
+import { Task, TaskTemplate, HomeAssistant, IntervalType, Label, resolveHaLabelColor } from "../types";
 import { loadTask, saveTask, updateTask, loadTags, loadLabelRegistry } from "../data/websockets";
 import { sharedStyles } from "../styles";
 import { localize } from "../../localize/localize";
@@ -269,7 +269,7 @@ export class TaskFormView extends LitElement {
 
   private _labelChipStyle(label: Label): string {
     if (!label.color) return "";
-    const c = label.color;
+    const c = resolveHaLabelColor(label.color);
     if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c)) {
       let hex = c.slice(1);
       if (hex.length === 3) hex = hex.split("").map((ch) => ch + ch).join("");
@@ -283,7 +283,8 @@ export class TaskFormView extends LitElement {
 
   private _labelChipSelectedStyle(label: Label): string {
     if (!label.color) return "";
-    return `background:${label.color};color:#fff;border-color:${label.color};`;
+    const c = resolveHaLabelColor(label.color);
+    return `background:${c};color:#fff;border-color:${c};`;
   }
 
   private _toggleAdvanced(): void {
