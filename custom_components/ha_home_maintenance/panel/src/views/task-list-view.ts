@@ -8,6 +8,8 @@ import { localize } from "../../localize/localize";
 type SortColumn = "title" | "interval" | "last_performed" | "next_due" | "labels" | "status";
 type SortDirection = "asc" | "desc";
 
+const SORT_STORAGE_KEY = "ha_home_maintenance_sort";
+
 @customElement("task-list-view")
 export class TaskListView extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -20,6 +22,27 @@ export class TaskListView extends LitElement {
   @state() private _sortColumn: SortColumn = "title";
   @state() private _sortDirection: SortDirection = "asc";
   @state() private _loading = true;
+
+  private _loadSortPreference(): void {
+    try {
+      const stored = localStorage.getItem(SORT_STORAGE_KEY);
+      if (stored) {
+        const { column, direction } = JSON.parse(stored);
+        if (column) this._sortColumn = column;
+        if (direction) this._sortDirection = direction;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  private _saveSortPreference(): void {
+    try {
+      localStorage.setItem(SORT_STORAGE_KEY, JSON.stringify({ column: this._sortColumn, direction: this._sortDirection }));
+    } catch {
+      // ignore
+    }
+  }
 
   static get styles() {
     return [
@@ -130,6 +153,7 @@ export class TaskListView extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
+    this._loadSortPreference();
     this._loadData();
   }
 
@@ -326,6 +350,7 @@ export class TaskListView extends LitElement {
       this._sortColumn = column;
       this._sortDirection = "asc";
     }
+    this._saveSortPreference();
   }
 
   private _sortIndicator(column: SortColumn): string {
@@ -397,11 +422,52 @@ export class TaskListView extends LitElement {
     const [column, direction] = value.split("-") as [SortColumn, SortDirection];
     this._sortColumn = column;
     this._sortDirection = direction;
+    this._saveSortPreference();
   }
 
   private _getLabelName(labelId: string): string {
     const label = this._labels.find((l) => l.label_id === labelId);
     return label ? label.name : labelId;
+  }
+
+  private _getLabel(labelId: string): Label | undefined {
+    return this._labels.find((l) => l.label_id === labelId);
+  }
+
+  private _labelChipStyle(label: Label | undefined): string {
+    if (!label?.color) return "";
+    const c = label.color;
+    if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c)) {
+      let hex = c.slice(1);
+      if (hex.length === 3) hex = hex.split("").map((ch) => ch + ch).join("");
+      const r = parseInt(hex.slice(0, 2), 16);
+      const g = parseInt(hex.slice(2, 4), 16);
+      const b = parseInt(hex.slice(4, 6), 16);
+      return `background:rgba(${r},${g},${b},0.12);color:${c};`;
+    }
+    return `border-left:3px solid ${c};padding-left:5px;`;
+  }
+
+  private _renderLabelChip(labelId: string) {
+    const label = this._getLabel(labelId);
+    const name = label ? label.name : labelId;
+    const style = this._labelChipStyle(label);
+    return html`<span class="label-chip" style=${style}>
+      ${label?.icon ? html`<ha-icon .icon=${label.icon}></ha-icon>` : nothing}${name}
+    </span>`;
+  }
+
+  private _renderFilterChip(label: Label) {
+    const style = this._labelChipStyle(label);
+    const isActive = this._selectedLabels.has(label.label_id);
+    const activeStyle = isActive && label.color ? `background:${label.color};color:#fff;` : isActive ? "" : style;
+    return html`<button
+      class="filter-chip ${isActive ? "active" : ""}"
+      style=${isActive ? activeStyle : style}
+      @click=${() => this._toggleLabelFilter(label.label_id)}
+    >
+      ${label.icon ? html`<ha-icon .icon=${label.icon}></ha-icon>` : nothing}${label.name}
+    </button>`;
   }
 
   private _navigateToTemplates(): void {
@@ -481,14 +547,7 @@ export class TaskListView extends LitElement {
         ${availableLabels.length > 0
           ? html`
               <div class="filter-chips">
-                ${availableLabels.map(
-                  (l) => html`
-                    <button
-                      class="filter-chip ${this._selectedLabels.has(l.label_id) ? "active" : ""}"
-                      @click=${() => this._toggleLabelFilter(l.label_id)}
-                    >${l.name}</button>
-                  `
-                )}
+                ${availableLabels.map((l) => this._renderFilterChip(l))}
                 ${this._selectedLabels.size > 0
                   ? html`<button class="filter-chip clear-chip" @click=${this._clearLabelFilters}>${localize("clear", this.hass?.language)}</button>`
                   : nothing}
@@ -581,10 +640,7 @@ export class TaskListView extends LitElement {
         <div class="hide-medium">${this._getNextDueString(task)}</div>
         <div class="hide-medium task-labels">
           ${task.labels && task.labels.length > 0
-            ? task.labels.map(
-                (id) =>
-                  html`<span class="label-chip">${this._getLabelName(id)}</span>`
-              )
+            ? task.labels.map((id) => this._renderLabelChip(id))
             : nothing}
         </div>
         <div>

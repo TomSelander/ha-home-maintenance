@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { Task, TaskTemplate, HomeAssistant, IntervalType } from "../types";
-import { loadTask, saveTask, updateTask, loadTags } from "../data/websockets";
+import { Task, TaskTemplate, HomeAssistant, IntervalType, Label } from "../types";
+import { loadTask, saveTask, updateTask, loadTags, loadLabelRegistry } from "../data/websockets";
 import { sharedStyles } from "../styles";
 import { localize } from "../../localize/localize";
 
@@ -26,6 +26,7 @@ export class TaskFormView extends LitElement {
   @state() private _loading = false;
   @state() private _showAdvanced = false;
   @state() private _tags: any[] = [];
+  @state() private _availableLabels: Label[] = [];
 
   static get styles() {
     return [
@@ -99,7 +100,7 @@ export class TaskFormView extends LitElement {
   protected async firstUpdated(): Promise<void> {
     this._loading = true;
     try {
-      await this._loadTags();
+      await Promise.all([this._loadTags(), this._loadLabels()]);
 
       if (this.taskId) {
         await this._loadExistingTask();
@@ -116,6 +117,14 @@ export class TaskFormView extends LitElement {
       this._tags = await loadTags(this.hass);
     } catch {
       this._tags = [];
+    }
+  }
+
+  private async _loadLabels(): Promise<void> {
+    try {
+      this._availableLabels = await loadLabelRegistry(this.hass);
+    } catch {
+      this._availableLabels = [];
     }
   }
 
@@ -181,6 +190,33 @@ export class TaskFormView extends LitElement {
 
   private _handleTrackHistoryToggle(e: Event): void {
     this._trackHistory = (e.target as HTMLInputElement).checked;
+  }
+
+  private _toggleLabel(labelId: string): void {
+    if (this._labels.includes(labelId)) {
+      this._labels = this._labels.filter((id) => id !== labelId);
+    } else {
+      this._labels = [...this._labels, labelId];
+    }
+  }
+
+  private _labelChipStyle(label: Label): string {
+    if (!label.color) return "";
+    const c = label.color;
+    if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c)) {
+      let hex = c.slice(1);
+      if (hex.length === 3) hex = hex.split("").map((ch) => ch + ch).join("");
+      const r = parseInt(hex.slice(0, 2), 16);
+      const g = parseInt(hex.slice(2, 4), 16);
+      const b = parseInt(hex.slice(4, 6), 16);
+      return `background:rgba(${r},${g},${b},0.12);color:${c};border-color:rgba(${r},${g},${b},0.3);`;
+    }
+    return `border-left:3px solid ${c};`;
+  }
+
+  private _labelChipSelectedStyle(label: Label): string {
+    if (!label.color) return "";
+    return `background:${label.color};color:#fff;border-color:${label.color};`;
   }
 
   private _toggleAdvanced(): void {
@@ -402,12 +438,25 @@ export class TaskFormView extends LitElement {
 
                     <div class="form-field">
                       <label>${localize("labels", this.hass?.language)}</label>
-                      <input
-                        type="text"
-                        .value=${this._labels.join(", ")}
-                        @input=${this._handleLabelsInput}
-                        placeholder="label1, label2"
-                      />
+                      ${this._availableLabels.length > 0
+                        ? html`<div class="label-picker">
+                            ${this._availableLabels.map((label) => {
+                              const selected = this._labels.includes(label.label_id);
+                              const style = selected
+                                ? this._labelChipSelectedStyle(label)
+                                : this._labelChipStyle(label);
+                              return html`<button
+                                type="button"
+                                class="label-picker-chip ${selected ? "selected" : ""}"
+                                style=${style}
+                                @click=${() => this._toggleLabel(label.label_id)}
+                              >
+                                ${label.icon ? html`<ha-icon .icon=${label.icon}></ha-icon>` : nothing}
+                                ${label.name}
+                              </button>`;
+                            })}
+                          </div>`
+                        : html`<p class="label-picker-empty">No labels defined in Home Assistant.</p>`}
                     </div>
                   </div>
                 `
@@ -427,13 +476,6 @@ export class TaskFormView extends LitElement {
     `;
   }
 
-  private _handleLabelsInput(e: Event): void {
-    const value = (e.target as HTMLInputElement).value;
-    this._labels = value
-      .split(",")
-      .map((l) => l.trim())
-      .filter((l) => l.length > 0);
-  }
 }
 
 declare global {

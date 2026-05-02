@@ -418,7 +418,9 @@ export const sharedStyles = css`
   }
 
   .label-chip {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     padding: 2px 8px;
     border-radius: 12px;
     font-size: 11px;
@@ -426,6 +428,48 @@ export const sharedStyles = css`
     background: var(--secondary-background-color);
     color: var(--primary-text-color);
     white-space: nowrap;
+  }
+
+  .label-chip ha-icon {
+    --mdc-icon-size: 12px;
+  }
+
+  /* Label picker (form) */
+  .label-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 0;
+  }
+
+  .label-picker-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--divider-color);
+    background: var(--secondary-background-color);
+    color: var(--primary-text-color);
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .label-picker-chip ha-icon {
+    --mdc-icon-size: 14px;
+  }
+
+  .label-picker-chip.selected {
+    border-color: transparent;
+  }
+
+  .label-picker-empty {
+    font-size: 13px;
+    color: var(--secondary-text-color);
+    font-style: italic;
   }
 
   /* Filter chips */
@@ -439,6 +483,7 @@ export const sharedStyles = css`
   .filter-chip {
     display: inline-flex;
     align-items: center;
+    gap: 4px;
     padding: 4px 12px;
     border-radius: 16px;
     cursor: pointer;
@@ -446,6 +491,10 @@ export const sharedStyles = css`
     font-family: inherit;
     border: none;
     transition: background-color 0.2s, color 0.2s;
+  }
+
+  .filter-chip ha-icon {
+    --mdc-icon-size: 14px;
   }
 
   .filter-chip.active {

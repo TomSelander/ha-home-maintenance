@@ -9,9 +9,9 @@ Track recurring home maintenance tasks with a beautiful sidebar panel built righ
 - **Full CRUD operations** — create, read, update, and delete maintenance tasks
 - **Template library** — 90+ pre-built tasks covering HVAC, plumbing, electrical, exterior, appliances, and more
 - **CSV import/export** — bulk-import tasks from a CSV file via the Browse Templates page, or export all tasks to CSV from the task list
-- **Responsive table view** — sort tasks by name, interval, due date, labels, or status
+- **Responsive table view** — sort tasks by name, interval, due date, labels, or status; sort preference is persisted across sessions
 - **Search and filter** — text search across task titles and descriptions, plus multi-label filtering with clickable chips (OR logic — tasks matching any selected label are shown)
-- **Label support** — assign Home Assistant labels to tasks and view them in a dedicated column
+- **Label support** — assign Home Assistant labels to tasks using a visual picker; label colors and icons from HA are shown on chips in the task list and filter bar
 - **Overdue notifications** — enable a per-task toggle to receive a persistent notification automatically when a task becomes overdue
 - **Completion history** — opt-in per-task tracking of every completion timestamp
 - **Binary sensors for overdue detection** — one sensor per task and one global "any overdue" sensor for use in automations and dashboards
