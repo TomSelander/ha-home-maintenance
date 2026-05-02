@@ -534,7 +534,10 @@ export class TaskListView extends LitElement {
         }
       }
     }
+    const registryIds = new Set(this._labels.map((l) => l.label_id));
     const availableLabels = this._labels.filter((l) => usedLabelIds.has(l.label_id));
+    // Custom labels: used in tasks but not in the HA label registry
+    const customLabelIds = [...usedLabelIds].filter((id) => !registryIds.has(id));
 
     return html`
       <div class="filter-bar">
@@ -544,10 +547,17 @@ export class TaskListView extends LitElement {
           .value=${this._searchQuery}
           @input=${this._handleSearchInput}
         />
-        ${availableLabels.length > 0
+        ${availableLabels.length > 0 || customLabelIds.length > 0
           ? html`
               <div class="filter-chips">
                 ${availableLabels.map((l) => this._renderFilterChip(l))}
+                ${customLabelIds.map((id) => {
+                  const isActive = this._selectedLabels.has(id);
+                  return html`<button
+                    class="filter-chip ${isActive ? "active" : ""}"
+                    @click=${() => this._toggleLabelFilter(id)}
+                  >${id}</button>`;
+                })}
                 ${this._selectedLabels.size > 0
                   ? html`<button class="filter-chip clear-chip" @click=${this._clearLabelFilters}>${localize("clear", this.hass?.language)}</button>`
                   : nothing}

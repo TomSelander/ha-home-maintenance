@@ -93,6 +93,52 @@ export class TaskFormView extends LitElement {
           padding: 48px;
           color: var(--secondary-text-color);
         }
+        .custom-labels-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          align-items: center;
+          margin-top: 8px;
+        }
+        .custom-label-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          background: var(--secondary-background-color);
+          border: 1px solid var(--divider-color);
+          border-radius: 12px;
+          padding: 2px 4px 2px 8px;
+          font-size: 12px;
+        }
+        .remove-label-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: var(--secondary-text-color);
+          font-size: 14px;
+          line-height: 1;
+          padding: 0 2px;
+          display: flex;
+          align-items: center;
+        }
+        .remove-label-btn:hover {
+          color: var(--label-badge-red, #f44336);
+        }
+        .custom-label-input {
+          flex: 1;
+          min-width: 180px;
+          padding: 4px 8px;
+          border: 1px solid var(--divider-color);
+          border-radius: 4px;
+          background: var(--card-background-color, #fff);
+          color: var(--primary-text-color);
+          font-size: 13px;
+          font-family: inherit;
+        }
+        .custom-label-input:focus {
+          outline: none;
+          border-color: var(--primary-color);
+        }
       `,
     ];
   }
@@ -197,6 +243,27 @@ export class TaskFormView extends LitElement {
       this._labels = this._labels.filter((id) => id !== labelId);
     } else {
       this._labels = [...this._labels, labelId];
+    }
+  }
+
+  private get _customLabels(): string[] {
+    const registryIds = new Set(this._availableLabels.map((l) => l.label_id));
+    return this._labels.filter((id) => !registryIds.has(id));
+  }
+
+  private _removeCustomLabel(label: string): void {
+    this._labels = this._labels.filter((id) => id !== label);
+  }
+
+  private _handleCustomLabelKeydown(e: KeyboardEvent): void {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const input = e.target as HTMLInputElement;
+      const value = input.value.trim();
+      if (value && !this._labels.includes(value)) {
+        this._labels = [...this._labels, value];
+      }
+      input.value = "";
     }
   }
 
@@ -456,7 +523,20 @@ export class TaskFormView extends LitElement {
                               </button>`;
                             })}
                           </div>`
-                        : html`<p class="label-picker-empty">No labels defined in Home Assistant.</p>`}
+                        : nothing}
+                      <div class="custom-labels-row">
+                        ${this._customLabels.map(
+                          (lbl) => html`<span class="label-chip custom-label-chip">
+                            ${lbl}<button type="button" class="remove-label-btn" @click=${() => this._removeCustomLabel(lbl)}>×</button>
+                          </span>`
+                        )}
+                        <input
+                          type="text"
+                          class="custom-label-input"
+                          placeholder="Add custom label, press Enter"
+                          @keydown=${this._handleCustomLabelKeydown}
+                        />
+                      </div>
                     </div>
                   </div>
                 `
