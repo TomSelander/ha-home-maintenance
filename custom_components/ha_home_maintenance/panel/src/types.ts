@@ -84,6 +84,31 @@ export function resolveHaLabelColor(color: string): string {
   return HA_LABEL_COLOR_MAP[color.toLowerCase()] ?? color;
 }
 
+export function labelChipStyle(rawColor: string | null | undefined): string {
+  if (!rawColor) return "";
+  const c = resolveHaLabelColor(rawColor);
+  if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c)) {
+    let hex = c.slice(1);
+    if (hex.length === 3) hex = hex.split("").map((ch) => ch + ch).join("");
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    // Darken text for light colors so it remains readable on the low-opacity background.
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    const textColor = luminance > 0.5
+      ? `rgb(${Math.round(r * 0.5)},${Math.round(g * 0.5)},${Math.round(b * 0.5)})`
+      : c;
+    return `background:rgba(${r},${g},${b},0.12);color:${textColor};`;
+  }
+  return `border-left:3px solid ${c};padding-left:5px;`;
+}
+
+export function labelChipActiveStyle(rawColor: string | null | undefined): string {
+  if (!rawColor) return "";
+  const c = resolveHaLabelColor(rawColor);
+  return `background:${c};color:#fff;`;
+}
+
 export interface EntityRegistryEntry {
   entity_id: string;
   unique_id: string;

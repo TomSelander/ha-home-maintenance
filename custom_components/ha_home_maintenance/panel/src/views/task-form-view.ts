@@ -1,6 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { Task, TaskTemplate, HomeAssistant, IntervalType, Label, resolveHaLabelColor } from "../types";
+import { Task, TaskTemplate, HomeAssistant, IntervalType, Label, labelChipStyle, labelChipActiveStyle } from "../types";
 import { loadTask, saveTask, updateTask, loadTags, loadLabelRegistry } from "../data/websockets";
 import { sharedStyles } from "../styles";
 import { localize } from "../../localize/localize";
@@ -139,6 +139,12 @@ export class TaskFormView extends LitElement {
           outline: none;
           border-color: var(--primary-color);
         }
+        .custom-label-hint {
+          margin: 6px 0 0;
+          font-size: 12px;
+          color: var(--secondary-text-color);
+          line-height: 1.4;
+        }
       `,
     ];
   }
@@ -268,23 +274,11 @@ export class TaskFormView extends LitElement {
   }
 
   private _labelChipStyle(label: Label): string {
-    if (!label.color) return "";
-    const c = resolveHaLabelColor(label.color);
-    if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c)) {
-      let hex = c.slice(1);
-      if (hex.length === 3) hex = hex.split("").map((ch) => ch + ch).join("");
-      const r = parseInt(hex.slice(0, 2), 16);
-      const g = parseInt(hex.slice(2, 4), 16);
-      const b = parseInt(hex.slice(4, 6), 16);
-      return `background:rgba(${r},${g},${b},0.12);color:${c};border-color:rgba(${r},${g},${b},0.3);`;
-    }
-    return `border-left:3px solid ${c};`;
+    return labelChipStyle(label.color);
   }
 
   private _labelChipSelectedStyle(label: Label): string {
-    if (!label.color) return "";
-    const c = resolveHaLabelColor(label.color);
-    return `background:${c};color:#fff;border-color:${c};`;
+    return labelChipActiveStyle(label.color);
   }
 
   private _toggleAdvanced(): void {
@@ -538,6 +532,7 @@ export class TaskFormView extends LitElement {
                           @keydown=${this._handleCustomLabelKeydown}
                         />
                       </div>
+                      <p class="custom-label-hint">Custom labels are local to this integration. To use a label across Home Assistant (with colors, icons, and filtering), create it in <strong>Settings → Labels</strong> first.</p>
                     </div>
                   </div>
                 `

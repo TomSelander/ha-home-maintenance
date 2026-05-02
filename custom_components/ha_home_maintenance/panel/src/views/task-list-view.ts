@@ -1,6 +1,6 @@
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { Task, Label, HomeAssistant, resolveHaLabelColor } from "../types";
+import { Task, Label, HomeAssistant, labelChipStyle, labelChipActiveStyle } from "../types";
 import { loadTasks, completeTask, removeTask, loadLabelRegistry } from "../data/websockets";
 import { sharedStyles } from "../styles";
 import { localize } from "../../localize/localize";
@@ -435,17 +435,7 @@ export class TaskListView extends LitElement {
   }
 
   private _labelChipStyle(label: Label | undefined): string {
-    if (!label?.color) return "";
-    const c = resolveHaLabelColor(label.color);
-    if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c)) {
-      let hex = c.slice(1);
-      if (hex.length === 3) hex = hex.split("").map((ch) => ch + ch).join("");
-      const r = parseInt(hex.slice(0, 2), 16);
-      const g = parseInt(hex.slice(2, 4), 16);
-      const b = parseInt(hex.slice(4, 6), 16);
-      return `background:rgba(${r},${g},${b},0.12);color:${c};`;
-    }
-    return `border-left:3px solid ${c};padding-left:5px;`;
+    return labelChipStyle(label?.color);
   }
 
   private _renderLabelChip(labelId: string) {
@@ -460,8 +450,7 @@ export class TaskListView extends LitElement {
   private _renderFilterChip(label: Label) {
     const style = this._labelChipStyle(label);
     const isActive = this._selectedLabels.has(label.label_id);
-    const resolvedColor = label.color ? resolveHaLabelColor(label.color) : null;
-    const activeStyle = isActive && resolvedColor ? `background:${resolvedColor};color:#fff;` : isActive ? "" : style;
+    const activeStyle = isActive && label.color ? labelChipActiveStyle(label.color) : isActive ? "" : style;
     return html`<button
       class="filter-chip ${isActive ? "active" : ""}"
       style=${isActive ? activeStyle : style}
