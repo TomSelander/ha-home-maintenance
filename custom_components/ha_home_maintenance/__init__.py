@@ -4,15 +4,12 @@ from __future__ import annotations
 
 import logging
 
+from homeassistant.components import frontend
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
-from homeassistant.util import dt as dt_util
-
-_LOGGER = logging.getLogger(__name__)
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
-
-from homeassistant.components import frontend
+from homeassistant.util import dt as dt_util
 
 from .const import (
     CONF_ADMIN_ONLY,
@@ -25,7 +22,9 @@ from .panel import async_register_panel
 from .store import TaskStore
 from .websocket import async_register_websockets
 
-PLATFORMS = ["binary_sensor"]
+_LOGGER = logging.getLogger(__name__)
+
+PLATFORMS = ["binary_sensor", "button"]
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:

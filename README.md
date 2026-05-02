@@ -14,6 +14,7 @@ Track recurring home maintenance tasks with a beautiful sidebar panel built righ
 - **Label support** — assign Home Assistant labels to tasks and view them in a dedicated column
 - **Overdue notifications** — enable a per-task toggle to receive a persistent notification automatically when a task becomes overdue
 - **Binary sensors for overdue detection** — one sensor per task and one global "any overdue" sensor for use in automations and dashboards
+- **Button entities** — one 'Complete' button per task for use on dashboards
 - **NFC tag support** — scan an NFC tag to instantly mark a task complete
 - **Configurable sidebar** — choose a custom panel title and optionally restrict access to admins only
 - **Integration icon** — branded icon displayed in the Home Assistant integrations page
@@ -164,6 +165,23 @@ Each task has a **Notify when overdue** toggle on the create/edit form. When ena
    ```
 
 3. Scanning the tag will mark the task complete immediately.
+
+---
+
+## Button Entities
+
+Each task exposes a `button` entity named **"\<Task Title\> Complete"**. Pressing the button marks the task as completed (sets last performed to today), identical to clicking the checkmark in the sidebar panel.
+
+Button entities are automatically created when tasks are added and become unavailable when tasks are deleted. They can be placed on any Home Assistant dashboard using the standard **Button card**.
+
+### Example Dashboard Card
+
+```yaml
+type: button
+entity: button.replace_hvac_filter_complete
+name: Mark HVAC Filter Done
+icon: mdi:check-circle
+```
 
 ---
 
