@@ -1,15 +1,18 @@
-import * as en from "./languages/en.json";
+import * as en from "../../translations/en.json";
 import { TaskTemplate } from "../src/types";
 
-const languages: Record<string, Record<string, string>> = {
-  en: en as unknown as Record<string, string>,
+type Translation = { panel?: Record<string, string> };
+
+const languages: Record<string, Translation> = {
+  en: en as unknown as Translation,
 };
 
 const DEFAULT_LANG = "en";
 
 export function localize(key: string, lang: string = DEFAULT_LANG): string {
-  const strings = languages[lang] || languages[DEFAULT_LANG];
-  return strings[key] || key;
+  const translation = languages[lang] || languages[DEFAULT_LANG];
+  const panel = translation.panel || (languages[DEFAULT_LANG].panel as Record<string, string>);
+  return panel[key] || key;
 }
 
 function toKey(s: string): string {
