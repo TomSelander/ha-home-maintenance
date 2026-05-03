@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { TaskTemplate, HomeAssistant, Task } from "../types";
 import { loadTemplates, saveTask, loadTasks } from "../data/websockets";
 import { sharedStyles } from "../styles";
-import { localize } from "../../localize/localize";
+import { localize, localizeTemplateTitle, localizeTemplateDesc, localizeCategory } from "../../localize/localize";
 
 @customElement("template-picker-view")
 export class TemplatePickerView extends LitElement {
@@ -468,7 +468,7 @@ export class TemplatePickerView extends LitElement {
                 return html`
                   <div class="template-category">
                     <h2 @click=${() => this._toggleCategory(category)}>
-                      ${category}
+                      ${localizeCategory(category, this.hass?.language)}
                       <ha-icon
                         icon=${expanded
                           ? "mdi:chevron-up"
@@ -493,15 +493,15 @@ export class TemplatePickerView extends LitElement {
                                       .icon=${template.icon}
                                     ></ha-icon>
                                     <span class="template-title"
-                                      >${template.title}</span
+                                      >${localizeTemplateTitle(template, this.hass?.language)}</span
                                     >
                                   </div>
                                   <div class="template-desc">
-                                    ${template.description}
+                                    ${localizeTemplateDesc(template, this.hass?.language)}
                                   </div>
                                   <div class="template-interval">
                                     Every ${template.interval_value}
-                                    ${template.interval_type}
+                                    ${localize(template.interval_type, this.hass?.language).toLowerCase()}
                                   </div>
                                 </div>
                               `
@@ -583,7 +583,7 @@ export class TemplatePickerView extends LitElement {
                   </button>
                 `
               : nothing}
-            ${this._importing ? html`<span>Importing...</span>` : nothing}
+            ${this._importing ? html`<span>${localize("importing", this.hass?.language)}</span>` : nothing}
           </div>
         </div>
       </div>

@@ -471,7 +471,7 @@ export class TaskListView extends LitElement {
 
   protected render() {
     if (this._loading) {
-      return html`<div class="loading">Loading...</div>`;
+      return html`<div class="loading">${localize("loading", this.hass?.language)}</div>`;
     }
 
     return html`

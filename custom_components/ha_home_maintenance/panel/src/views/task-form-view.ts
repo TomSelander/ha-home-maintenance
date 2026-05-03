@@ -345,7 +345,7 @@ export class TaskFormView extends LitElement {
   protected render() {
     if (this._loading) {
       return html`
-        <div class="loading-overlay">Loading...</div>
+        <div class="loading-overlay">${localize("loading", this.hass?.language)}</div>
       `;
     }
 
@@ -474,7 +474,7 @@ export class TaskFormView extends LitElement {
                     <div class="form-field">
                       <label>${localize("tag", this.hass?.language)}</label>
                       <select .value=${this._tagId} @change=${this._handleTagChange}>
-                        <option value="">-- None --</option>
+                        <option value="">-- ${localize("none_option", this.hass?.language)} --</option>
                         ${this._tags.map(
                           (tag) => html`
                             <option value=${tag.id} ?selected=${this._tagId === tag.id}>
@@ -528,11 +528,11 @@ export class TaskFormView extends LitElement {
                         <input
                           type="text"
                           class="custom-label-input"
-                          placeholder="Add custom label, press Enter"
+                          placeholder="${localize("add_custom_label_placeholder", this.hass?.language)}"
                           @keydown=${this._handleCustomLabelKeydown}
                         />
                       </div>
-                      <p class="custom-label-hint">Custom labels are local to this integration. To use a label across Home Assistant (with colors, icons, and filtering), create it in <strong>Settings → Labels</strong> first.</p>
+                      <p class="custom-label-hint">${localize("custom_label_hint", this.hass?.language)}</p>
                     </div>
                   </div>
                 `
