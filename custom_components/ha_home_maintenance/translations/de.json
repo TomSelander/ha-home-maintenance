@@ -1,0 +1,28 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Hauswartung Pro",
+        "description": "Richte die Integration von Hauswartung Pro ein, um wiederkehrende Wartungsaufgaben zu verfolgen."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Es ist nur eine einzige Instanz zulässig."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Hauswartung Pro Optionen",
+        "data": {
+          "admin_only": "Nur für Administratoren",
+          "sidebar_title": "Seitenleisten-Titel"
+        },
+        "data_description": {
+          "admin_only": "Zugriff auf das Panel auf Admin-Benutzer einschränken.",
+          "sidebar_title": "Titel, der in der Seitenleisten-Navigation angezeigt wird."
+        }
+      }
+    }
+  }
+}
