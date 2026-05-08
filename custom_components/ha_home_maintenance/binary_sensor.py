@@ -124,6 +124,7 @@ class HomeMaintenanceSensor(BinarySensorEntity):
             "track_history": task.track_history,
             "completion_count": len(task.completion_history) if task.track_history else None,
             "last_completed": task.completion_history[-1] if task.track_history and task.completion_history else None,
+            "labels": task.labels,
         }
 
     @property

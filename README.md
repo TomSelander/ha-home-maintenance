@@ -160,6 +160,16 @@ Each task has a **Notify when overdue** toggle on the create/edit form. When ena
 
 Each task has a **Track completion history** toggle on the create/edit form. It is off by default. When enabled, every time a task is marked complete a timestamp is recorded. When editing a task with history tracking on, the edit form shows a **Completion History** section listing the most recent 20 completions (newest first). The binary sensor for that task also exposes `completion_count` and `last_completed` attributes for use in automations and dashboards.
 
+### Labels in Automations
+
+Labels assigned to a task are exposed as a `labels` attribute on its binary sensor entity (a list of label names, or an empty list if none are assigned). This lets you condition automations on specific labels — for example, notify only a particular person when their assigned tasks become overdue:
+
+```yaml
+condition:
+  - condition: template
+    value_template: "{{ 'Mike' in state_attr('binary_sensor.my_task', 'labels') }}"
+```
+
 ### NFC Tags
 
 1. Edit a task and note its **Task ID** displayed in the form.
