@@ -158,7 +158,41 @@ Each task has a **Notify when overdue** toggle on the create/edit form. When ena
 
 ### Completion History
 
-Each task has a **Track completion history** toggle on the create/edit form. It is off by default. When enabled, every time a task is marked complete a timestamp is recorded. When editing a task with history tracking on, the edit form shows a **Completion History** section listing the most recent 20 completions (newest first). The binary sensor for that task also exposes `completion_count` and `last_completed` attributes for use in automations and dashboards.
+Each task has a **Track completion history** toggle on the create/edit form. It is off by default. When enabled, every time a task is marked complete a timestamp is recorded. When editing a task with history tracking on, the edit form shows a **Completion History** section listing the most recent 20 completions (newest first).
+
+### Entity Attributes
+
+Every task binary sensor exposes the following attributes for use in automations and dashboards:
+
+| Attribute | Type | Description |
+|---|---|---|
+| `title` | string | Task title |
+| `description` | string | Task description |
+| `last_performed` | string \| null | ISO date of the last completion (`null` if never performed) |
+| `next_due` | string | ISO date when the task is next due |
+| `interval` | string | Repeat interval, e.g. `12 months` |
+| `icon` | string | MDI icon name, e.g. `mdi:wrench` |
+| `tag_id` | string \| null | NFC tag ID linked to the task (`null` if none) |
+| `track_history` | boolean | Whether completion history tracking is enabled |
+| `completion_count` | integer \| null | Total number of recorded completions (`null` when `track_history` is off) |
+| `last_completed` | string \| null | ISO timestamp of the most recent completion (`null` when `track_history` is off or no completions yet) |
+| `labels` | list | HA labels assigned to the task (empty list if none) |
+
+**Example — notify a specific person when their tasks are overdue:**
+
+```yaml
+condition:
+  - condition: template
+    value_template: "{{ 'Mike' in state_attr('binary_sensor.my_task', 'labels') }}"
+```
+
+**Example — skip notification if the task was performed recently:**
+
+```yaml
+condition:
+  - condition: template
+    value_template: "{{ state_attr('binary_sensor.my_task', 'last_performed') < (now().date() - timedelta(days=7)).isoformat() }}"
+```
 
 ### NFC Tags
 
