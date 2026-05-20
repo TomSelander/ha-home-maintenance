@@ -17,6 +17,7 @@ Track recurring home maintenance tasks with a beautiful sidebar panel built righ
 - **Binary sensors for overdue detection** — one sensor per task and one global "any overdue" sensor for use in automations and dashboards
 - **Button entities** — one 'Complete' button per task for use on dashboards
 - **NFC tag support** — scan an NFC tag to instantly mark a task complete
+- **Mobile sidebar menu** — hamburger menu button in the panel header on narrow/mobile viewports, matching the behavior of built-in HA panels like HACS and ESPHome
 - **Configurable sidebar** — choose a custom panel title and optionally restrict access to admins only
 - **Integration icon** — branded icon displayed in the Home Assistant integrations page
 

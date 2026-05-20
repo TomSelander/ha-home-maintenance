@@ -26,6 +26,10 @@ export const sharedStyles = css`
     --mdc-icon-size: 24px;
   }
 
+  .page-header ha-menu-button {
+    flex-shrink: 0;
+  }
+
   /* Task table - responsive, NOT hardcoded 850px */
   .task-table {
     width: 100%;

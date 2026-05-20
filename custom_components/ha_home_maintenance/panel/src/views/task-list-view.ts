@@ -477,6 +477,9 @@ export class TaskListView extends LitElement {
     return html`
       <div class="task-list">
         <div class="page-header">
+          ${this.narrow
+            ? html`<ha-menu-button .hass=${this.hass} .narrow=${this.narrow}></ha-menu-button>`
+            : nothing}
           <h1>${localize("panel_title", this.hass?.language)}</h1>
           <div class="header-actions">
             <button class="btn" @click=${this._navigateToTemplates}>
