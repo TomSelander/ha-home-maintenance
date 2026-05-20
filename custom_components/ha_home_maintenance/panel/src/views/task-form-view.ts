@@ -357,6 +357,9 @@ export class TaskFormView extends LitElement {
     return html`
       <div>
         <div class="page-header">
+          ${this.narrow
+            ? html`<ha-menu-button .hass=${this.hass} .narrow=${this.narrow}></ha-menu-button>`
+            : nothing}
           <button class="back-btn action-btn" @click=${this._cancel}>
             <ha-icon icon="mdi:arrow-left"></ha-icon>
           </button>

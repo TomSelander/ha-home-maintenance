@@ -429,6 +429,9 @@ export class TemplatePickerView extends LitElement {
     return html`
       <div>
         <div class="page-header">
+          ${this.narrow
+            ? html`<ha-menu-button .hass=${this.hass} .narrow=${this.narrow}></ha-menu-button>`
+            : nothing}
           <button class="back-btn" @click=${this._goBack}>
             <ha-icon icon="mdi:arrow-left"></ha-icon>
           </button>
