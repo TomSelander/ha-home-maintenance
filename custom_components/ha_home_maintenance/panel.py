@@ -28,10 +28,8 @@ async def async_register_panel(
         hass.data[static_path_key] = True
 
     # Remove existing panel before re-registering (handles reloads)
-    try:
+    if DOMAIN in hass.data.get("frontend_panels", {}):
         frontend.async_remove_panel(hass, DOMAIN)
-    except (ValueError, KeyError):
-        pass
 
     await panel_custom.async_register_panel(
         hass,

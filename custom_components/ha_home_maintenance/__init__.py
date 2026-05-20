@@ -105,10 +105,8 @@ async def async_unload_entry(
     )
     if unload_ok:
         hass.data.pop(DOMAIN, None)
-        try:
+        if DOMAIN in hass.data.get("frontend_panels", {}):
             frontend.async_remove_panel(hass, DOMAIN)
-        except (ValueError, KeyError):
-            _LOGGER.debug("Panel already removed or not registered")
     return unload_ok
 
 
