@@ -10,11 +10,17 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.event import async_track_time_interval
 
 from .const import DOMAIN, NAME, VERSION
 from .store import HomeMaintenanceTask, TaskStore
 
 _LOGGER = logging.getLogger(__name__)
+
+# How often each sensor re-evaluates its overdue status. Overdue is purely a
+# function of wall-clock time, so we need a periodic tick to detect transitions
+# when no store changes occur.
+OVERDUE_CHECK_INTERVAL = timedelta(hours=1)
 
 
 async def async_setup_entry(
@@ -140,9 +146,23 @@ class HomeMaintenanceSensor(BinarySensorEntity):
                 f"{DOMAIN}_tasks_updated", self._handle_update
             )
         )
+        # Tasks can transition to overdue purely by time passing, without any
+        # store mutation. Poll on an interval so we still detect that and
+        # surface the persistent notification.
+        self.async_on_remove(
+            async_track_time_interval(
+                self.hass, self._handle_tick, OVERDUE_CHECK_INTERVAL
+            )
+        )
+
+    async def _handle_tick(self, _now) -> None:
+        await self._refresh_and_notify()
 
     async def _handle_update(self, event) -> None:
         """Handle task-updated events by refreshing state."""
+        await self._refresh_and_notify()
+
+    async def _refresh_and_notify(self) -> None:
         is_overdue = self.is_on
         task = self._store.get_task(self._task_id)
         if (
