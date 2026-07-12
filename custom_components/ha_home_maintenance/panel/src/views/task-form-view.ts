@@ -137,7 +137,7 @@ export class TaskFormView extends LitElement {
         }
         .custom-label-input:focus {
           outline: none;
-          border-color: var(--primary-color);
+          border-color: var(--hmp-accent-color);
         }
         .custom-label-hint {
           margin: 6px 0 0;

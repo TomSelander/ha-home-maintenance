@@ -115,7 +115,7 @@ export class TaskListView extends LitElement {
 
         .filter-bar input:focus {
           outline: none;
-          border-color: var(--primary-color);
+          border-color: var(--hmp-accent-color);
         }
 
         .filter-bar select {
@@ -130,7 +130,7 @@ export class TaskListView extends LitElement {
 
         .filter-bar select:focus {
           outline: none;
-          border-color: var(--primary-color);
+          border-color: var(--hmp-accent-color);
         }
 
         .sort-select {
@@ -145,7 +145,7 @@ export class TaskListView extends LitElement {
 
         .sort-select:focus {
           outline: none;
-          border-color: var(--primary-color);
+          border-color: var(--hmp-accent-color);
         }
       `,
     ];

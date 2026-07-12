@@ -4,7 +4,7 @@ export const sharedStyles = css`
   :host {
     display: block;
     padding: 16px;
-    --primary-color: var(--ha-card-header-color, var(--primary-text-color));
+    --hmp-accent-color: var(--ha-card-header-color, var(--primary-text-color));
   }
 
   .page-header {
@@ -143,7 +143,7 @@ export const sharedStyles = css`
   }
 
   .action-btn.edit:hover {
-    color: var(--primary-color);
+    color: var(--hmp-accent-color);
   }
 
   .action-btn.delete:hover {
@@ -206,7 +206,7 @@ export const sharedStyles = css`
   .form-field textarea:focus,
   .form-field select:focus {
     outline: none;
-    border-color: var(--primary-color);
+    border-color: var(--hmp-accent-color);
   }
 
   .form-row {
@@ -255,7 +255,7 @@ export const sharedStyles = css`
   }
 
   .template-card:hover {
-    border-color: var(--primary-color);
+    border-color: var(--hmp-accent-color);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 

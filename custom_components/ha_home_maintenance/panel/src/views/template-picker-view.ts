@@ -54,7 +54,7 @@ export class TemplatePickerView extends LitElement {
           user-select: none;
         }
         .template-category h2:hover {
-          color: var(--primary-color);
+          color: var(--hmp-accent-color);
         }
         .category-count {
           font-size: 14px;
