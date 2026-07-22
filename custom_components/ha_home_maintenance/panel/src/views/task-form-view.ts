@@ -5,6 +5,8 @@ import { loadTask, saveTask, updateTask, loadTags, loadLabelRegistry } from "../
 import { sharedStyles } from "../styles";
 import { localize } from "../../localize/localize";
 
+const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
 @customElement("task-form-view")
 export class TaskFormView extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -22,6 +24,7 @@ export class TaskFormView extends LitElement {
   @state() private _labels: string[] = [];
   @state() private _notifyWhenOverdue = false;
   @state() private _trackHistory = false;
+  @state() private _activeMonths: number[] = [];
   @state() private _completionHistory: string[] = [];
   @state() private _loading = false;
   @state() private _showAdvanced = false;
@@ -195,6 +198,7 @@ export class TaskFormView extends LitElement {
       this._notifyWhenOverdue = task.notify_when_overdue || false;
       this._trackHistory = task.track_history || false;
       this._completionHistory = task.completion_history || [];
+      this._activeMonths = task.active_months || [];
     } catch (err) {
       console.error("Failed to load task:", err);
     }
@@ -242,6 +246,14 @@ export class TaskFormView extends LitElement {
 
   private _handleTrackHistoryToggle(e: Event): void {
     this._trackHistory = (e.target as HTMLInputElement).checked;
+  }
+
+  private _toggleActiveMonth(month: number): void {
+    if (this._activeMonths.includes(month)) {
+      this._activeMonths = this._activeMonths.filter((m) => m !== month);
+    } else {
+      this._activeMonths = [...this._activeMonths, month].sort((a, b) => a - b);
+    }
   }
 
   private _toggleLabel(labelId: string): void {
@@ -313,6 +325,7 @@ export class TaskFormView extends LitElement {
         labels: this._labels,
         notify_when_overdue: this._notifyWhenOverdue,
         track_history: this._trackHistory,
+        active_months: this._activeMonths,
       };
 
       if (this.taskId) {
@@ -415,6 +428,23 @@ export class TaskFormView extends LitElement {
                 </option>
               </select>
             </div>
+          </div>
+
+          <div class="form-field">
+            <label>${localize("active_months", this.hass?.language)}</label>
+            <div class="label-picker">
+              ${MONTHS.map((month) => {
+                const selected = this._activeMonths.includes(month);
+                return html`<button
+                  type="button"
+                  class="label-picker-chip ${selected ? "selected" : ""}"
+                  @click=${() => this._toggleActiveMonth(month)}
+                >
+                  ${localize(`month_${month}`, this.hass?.language)}
+                </button>`;
+              })}
+            </div>
+            <p class="custom-label-hint">${localize("active_months_hint", this.hass?.language)}</p>
           </div>
 
           <div class="form-field">

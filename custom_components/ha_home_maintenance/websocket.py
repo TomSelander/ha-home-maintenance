@@ -103,6 +103,7 @@ async def ws_get_task(
         vol.Optional("last_performed"): vol.Any(str, None),
         vol.Optional("notify_when_overdue", default=False): bool,
         vol.Optional("track_history", default=False): bool,
+        vol.Optional("active_months", default=[]): [vol.All(int, vol.Range(min=1, max=12))],
     }
 )
 @websocket_api.async_response
@@ -125,6 +126,7 @@ async def ws_add_task(
         "labels": msg.get("labels", []),
         "notify_when_overdue": msg.get("notify_when_overdue", False),
         "track_history": msg.get("track_history", False),
+        "active_months": msg.get("active_months", []),
     }
     if "tag_id" in msg:
         task_data["tag_id"] = msg["tag_id"]
@@ -151,6 +153,7 @@ async def ws_add_task(
         vol.Optional("labels"): [str],
         vol.Optional("notify_when_overdue"): bool,
         vol.Optional("track_history"): bool,
+        vol.Optional("active_months"): [vol.All(int, vol.Range(min=1, max=12))],
     }
 )
 @websocket_api.async_response
@@ -176,6 +179,7 @@ async def ws_update_task(
         "labels",
         "notify_when_overdue",
         "track_history",
+        "active_months",
     ):
         if key in msg:
             task_data[key] = msg[key]

@@ -13,6 +13,7 @@ export interface Task {
   notify_when_overdue: boolean;
   track_history: boolean;
   completion_history: string[];
+  active_months: number[];
 }
 
 export interface TaskTemplate {
