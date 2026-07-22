@@ -4,6 +4,7 @@ import { Task, TaskTemplate, HomeAssistant, IntervalType, Label, labelChipStyle,
 import { loadTask, saveTask, updateTask, loadTags, loadLabelRegistry } from "../data/websockets";
 import { sharedStyles } from "../styles";
 import { localize } from "../../localize/localize";
+import { applyPrimaryButtonContrast } from "../helpers";
 
 @customElement("task-form-view")
 export class TaskFormView extends LitElement {
@@ -43,7 +44,7 @@ export class TaskFormView extends LitElement {
         }
         .btn.primary {
           background: var(--primary-color);
-          color: var(--text-primary-color, #fff);
+          color: var(--readable-primary-text, var(--text-primary-color, #fff));
           border: none;
         }
         .btn.primary:hover {
@@ -147,6 +148,12 @@ export class TaskFormView extends LitElement {
         }
       `,
     ];
+  }
+
+  protected updated(changedProperties: Map<string, unknown>): void {
+    if (changedProperties.has("hass")) {
+      applyPrimaryButtonContrast(this);
+    }
   }
 
   protected async firstUpdated(): Promise<void> {

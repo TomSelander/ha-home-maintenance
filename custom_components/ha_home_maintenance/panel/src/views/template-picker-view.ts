@@ -4,6 +4,7 @@ import { TaskTemplate, HomeAssistant, Task } from "../types";
 import { loadTemplates, saveTask, loadTasks } from "../data/websockets";
 import { sharedStyles } from "../styles";
 import { localize, localizeTemplateTitle, localizeTemplateDesc, localizeCategory } from "../../localize/localize";
+import { applyPrimaryButtonContrast } from "../helpers";
 
 @customElement("template-picker-view")
 export class TemplatePickerView extends LitElement {
@@ -34,7 +35,7 @@ export class TemplatePickerView extends LitElement {
         }
         .btn.primary {
           background: var(--primary-color);
-          color: var(--text-primary-color, #fff);
+          color: var(--readable-primary-text, var(--text-primary-color, #fff));
           border: none;
         }
         .btn.primary:hover {
@@ -169,6 +170,12 @@ export class TemplatePickerView extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     this._loadTemplates();
+  }
+
+  protected updated(changedProperties: Map<string, unknown>): void {
+    if (changedProperties.has("hass")) {
+      applyPrimaryButtonContrast(this);
+    }
   }
 
   private async _loadTemplates(): Promise<void> {

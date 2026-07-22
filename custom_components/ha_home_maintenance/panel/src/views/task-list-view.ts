@@ -4,6 +4,7 @@ import { Task, Label, HomeAssistant, labelChipStyle, labelChipActiveStyle } from
 import { loadTasks, completeTask, removeTask, loadLabelRegistry } from "../data/websockets";
 import { sharedStyles } from "../styles";
 import { localize } from "../../localize/localize";
+import { applyPrimaryButtonContrast } from "../helpers";
 
 type SortColumn = "title" | "interval" | "last_performed" | "next_due" | "labels" | "status";
 type SortDirection = "asc" | "desc";
@@ -70,7 +71,7 @@ export class TaskListView extends LitElement {
 
         .btn.primary {
           background: var(--primary-color);
-          color: var(--text-primary-color, #fff);
+          color: var(--readable-primary-text, var(--text-primary-color, #fff));
           border-color: var(--primary-color);
         }
 
@@ -155,6 +156,12 @@ export class TaskListView extends LitElement {
     super.connectedCallback();
     this._loadSortPreference();
     this._loadData();
+  }
+
+  protected updated(changedProperties: Map<string, unknown>): void {
+    if (changedProperties.has("hass")) {
+      applyPrimaryButtonContrast(this);
+    }
   }
 
   private async _loadData(): Promise<void> {
