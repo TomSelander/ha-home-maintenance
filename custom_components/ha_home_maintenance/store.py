@@ -82,7 +82,13 @@ class TaskStore:
         return self._tasks.get(task_id)
 
     def get_task_by_title(self, title: str) -> HomeMaintenanceTask | None:
-        """Return the first task with a matching title (case-insensitive), or None."""
+        """Return the first task with a matching title (case-insensitive), or None.
+
+        Titles aren't enforced unique, so if more than one task shares a
+        title (case-insensitively), only the first match in dict iteration
+        order is returned — callers (e.g. the create_task/complete_task
+        services) rely on titles being unique in practice.
+        """
         title_lower = title.strip().lower()
         for task in self._tasks.values():
             if task.title.strip().lower() == title_lower:

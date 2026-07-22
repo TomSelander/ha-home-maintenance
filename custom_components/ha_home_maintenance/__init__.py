@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import logging
 
+import voluptuous as vol
+
 from homeassistant.components import frontend
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 from homeassistant.util import dt as dt_util
@@ -129,6 +132,27 @@ def _resolve_task_ids(hass: HomeAssistant, call: ServiceCall) -> list[str]:
     return task_ids
 
 
+CREATE_TASK_SCHEMA = vol.Schema(
+    {
+        vol.Required("title"): vol.All(str, vol.Length(min=1)),
+        vol.Optional("description"): str,
+        vol.Optional("interval_value"): int,
+        vol.Optional("interval_type"): vol.In(["days", "weeks", "months"]),
+        vol.Optional("icon"): str,
+        vol.Optional("labels"): [str],
+        vol.Optional("notify_when_overdue"): bool,
+        vol.Optional("track_history"): bool,
+        vol.Optional("tag_id"): str,
+    },
+    extra=vol.ALLOW_EXTRA,
+)
+
+COMPLETE_TASK_SCHEMA = vol.Schema(
+    {vol.Optional("title"): vol.All(str, vol.Length(min=1))},
+    extra=vol.ALLOW_EXTRA,
+)
+
+
 def _register_services(hass: HomeAssistant, store: TaskStore) -> None:
     """Register integration services."""
 
@@ -182,8 +206,13 @@ def _register_services(hass: HomeAssistant, store: TaskStore) -> None:
             )
 
     async def handle_complete_task(call: ServiceCall) -> None:
+        title = call.data.get("title")
+        task_ids = _resolve_task_ids(hass, call)
+        if not title and not task_ids:
+            raise ServiceValidationError(
+                "complete_task requires either an entity target or a 'title' field"
+            )
         try:
-            title = call.data.get("title")
             if title:
                 task = store.get_task_by_title(title)
                 if task is None:
@@ -193,7 +222,7 @@ def _register_services(hass: HomeAssistant, store: TaskStore) -> None:
                     return
                 await store.async_complete_task(task.id)
                 return
-            for task_id in _resolve_task_ids(hass, call):
+            for task_id in task_ids:
                 await store.async_complete_task(task_id)
         except Exception:
             _LOGGER.exception("Error completing task")
@@ -204,7 +233,12 @@ def _register_services(hass: HomeAssistant, store: TaskStore) -> None:
     hass.services.async_register(
         DOMAIN, SERVICE_MARK_OVERDUE, handle_mark_overdue
     )
-    hass.services.async_register(DOMAIN, SERVICE_CREATE_TASK, handle_create_task)
     hass.services.async_register(
-        DOMAIN, SERVICE_COMPLETE_TASK, handle_complete_task
+        DOMAIN, SERVICE_CREATE_TASK, handle_create_task, schema=CREATE_TASK_SCHEMA
+    )
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_COMPLETE_TASK,
+        handle_complete_task,
+        schema=COMPLETE_TASK_SCHEMA,
     )
