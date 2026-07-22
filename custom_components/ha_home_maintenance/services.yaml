@@ -13,3 +13,97 @@ reset_last_performed:
       example: "2024-01-15"
       selector:
         date:
+
+mark_overdue:
+  name: Mark overdue
+  description: Force a maintenance task to immediately become overdue, e.g. when a sensor reports a fault.
+  target:
+    entity:
+      integration: ha_home_maintenance
+      domain: binary_sensor
+
+create_task:
+  name: Create task
+  description: Create a new maintenance task, e.g. from an automation triggered by a sensor. If a task with the same title already exists, this is a no-op.
+  fields:
+    title:
+      name: Title
+      description: The task title.
+      required: true
+      example: "Replace air purifier filter"
+      selector:
+        text:
+    description:
+      name: Description
+      description: The task description.
+      required: false
+      selector:
+        text:
+    interval_value:
+      name: Interval value
+      description: How often the task repeats.
+      required: false
+      example: 30
+      selector:
+        number:
+          min: 1
+          mode: box
+    interval_type:
+      name: Interval type
+      description: The unit for the interval value.
+      required: false
+      example: "days"
+      selector:
+        select:
+          options:
+            - "days"
+            - "weeks"
+            - "months"
+    icon:
+      name: Icon
+      description: The MDI icon to use for the task.
+      required: false
+      example: "mdi:toolbox"
+      selector:
+        icon:
+    labels:
+      name: Labels
+      description: Home Assistant labels to assign to the task.
+      required: false
+      selector:
+        label:
+          multiple: true
+    notify_when_overdue:
+      name: Notify when overdue
+      description: Whether to send a persistent notification when the task becomes overdue.
+      required: false
+      selector:
+        boolean:
+    track_history:
+      name: Track completion history
+      description: Whether to record a timestamp each time the task is completed.
+      required: false
+      selector:
+        boolean:
+    tag_id:
+      name: NFC tag ID
+      description: An NFC tag ID to link to the task.
+      required: false
+      selector:
+        text:
+
+complete_task:
+  name: Complete task
+  description: Mark a maintenance task as completed. Target it by entity, or by title (useful for tasks created dynamically via create_task).
+  target:
+    entity:
+      integration: ha_home_maintenance
+      domain: binary_sensor
+  fields:
+    title:
+      name: Title
+      description: The title of the task to complete. Used instead of the entity target when the task's entity id isn't known, e.g. for a task created by create_task.
+      required: false
+      example: "Replace air purifier filter"
+      selector:
+        text:
