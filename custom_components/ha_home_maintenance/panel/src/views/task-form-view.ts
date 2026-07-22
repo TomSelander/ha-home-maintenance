@@ -4,6 +4,7 @@ import { Task, TaskTemplate, HomeAssistant, IntervalType, Label, labelChipStyle,
 import { loadTask, saveTask, updateTask, loadTags, loadLabelRegistry } from "../data/websockets";
 import { sharedStyles } from "../styles";
 import { localize } from "../../localize/localize";
+import { applyPrimaryButtonContrast } from "../helpers";
 
 const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -46,7 +47,7 @@ export class TaskFormView extends LitElement {
         }
         .btn.primary {
           background: var(--primary-color);
-          color: var(--text-primary-color, #fff);
+          color: var(--readable-primary-text, var(--text-primary-color, #fff));
           border: none;
         }
         .btn.primary:hover {
@@ -150,6 +151,12 @@ export class TaskFormView extends LitElement {
         }
       `,
     ];
+  }
+
+  protected updated(changedProperties: Map<string, unknown>): void {
+    if (changedProperties.has("hass")) {
+      applyPrimaryButtonContrast(this);
+    }
   }
 
   protected async firstUpdated(): Promise<void> {

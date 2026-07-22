@@ -508,7 +508,7 @@ export const sharedStyles = css`
 
   .filter-chip.active {
     background: var(--primary-color);
-    color: var(--text-primary-color, #fff);
+    color: var(--readable-primary-text, var(--text-primary-color, #fff));
   }
 
   .filter-chip:not(.active) {
