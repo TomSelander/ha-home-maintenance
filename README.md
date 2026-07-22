@@ -13,6 +13,7 @@ Track recurring home maintenance tasks with a beautiful sidebar panel built righ
 - **Search and filter** — text search across task titles and descriptions, plus multi-label filtering with clickable chips (OR logic — tasks matching any selected label are shown)
 - **Label support** — assign Home Assistant labels to tasks using a visual picker; label colors and icons from HA are shown on chips in the task list and filter bar
 - **Overdue notifications** — enable a per-task toggle to receive a persistent notification automatically when a task becomes overdue
+- **Seasonal tasks** — restrict a task to specific active months (e.g. spring/summer lawn care); outside those months it's shown as "Out of Season" instead of overdue
 - **Completion history** — opt-in per-task tracking of every completion timestamp
 - **Binary sensors for overdue detection** — one sensor per task and one global "any overdue" sensor for use in automations and dashboards
 - **Button entities** — one 'Complete' button per task for use on dashboards

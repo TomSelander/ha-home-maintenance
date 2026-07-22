@@ -34,6 +34,7 @@ class HomeMaintenanceTask:
     notify_when_overdue: bool = False
     track_history: bool = False
     completion_history: list[str] = field(default_factory=list)
+    active_months: list[int] = field(default_factory=list)  # 1-12; empty = year-round
 
 
 class TaskStore:

@@ -113,6 +113,11 @@ export const sharedStyles = css`
     color: var(--label-badge-red, #f44336);
   }
 
+  .status-out-of-season {
+    background: rgba(158, 158, 158, 0.12);
+    color: var(--label-badge-grey, #9e9e9e);
+  }
+
   /* Action buttons */
   .action-buttons {
     display: flex;

@@ -233,7 +233,7 @@ export class TaskListView extends LitElement {
           break;
         }
         case "status": {
-          const order = { overdue: 0, due_soon: 1, ok: 2 };
+          const order = { overdue: 0, due_soon: 1, ok: 2, out_of_season: 3 };
           cmp = (order[this._getStatus(a)] ?? 3) - (order[this._getStatus(b)] ?? 3);
           break;
         }
@@ -286,7 +286,18 @@ export class TaskListView extends LitElement {
     return new Date(ts).toLocaleDateString();
   }
 
-  private _getStatus(task: Task): "overdue" | "due_soon" | "ok" {
+  private _isInSeason(task: Task): boolean {
+    if (!task.active_months || task.active_months.length === 0) {
+      return true;
+    }
+    const currentMonth = new Date().getMonth() + 1;
+    return task.active_months.includes(currentMonth);
+  }
+
+  private _getStatus(task: Task): "overdue" | "due_soon" | "ok" | "out_of_season" {
+    if (!this._isInSeason(task)) {
+      return "out_of_season";
+    }
     if (!task.last_performed) {
       return "overdue";
     }
@@ -302,7 +313,7 @@ export class TaskListView extends LitElement {
     return "ok";
   }
 
-  private _getStatusLabel(status: "overdue" | "due_soon" | "ok"): string {
+  private _getStatusLabel(status: "overdue" | "due_soon" | "ok" | "out_of_season"): string {
     const lang = this.hass?.language;
     switch (status) {
       case "overdue":
@@ -311,10 +322,12 @@ export class TaskListView extends LitElement {
         return localize("due_soon", lang);
       case "ok":
         return localize("ok", lang);
+      case "out_of_season":
+        return localize("out_of_season", lang);
     }
   }
 
-  private _getStatusClass(status: "overdue" | "due_soon" | "ok"): string {
+  private _getStatusClass(status: "overdue" | "due_soon" | "ok" | "out_of_season"): string {
     switch (status) {
       case "overdue":
         return "status-overdue";
@@ -322,6 +335,8 @@ export class TaskListView extends LitElement {
         return "status-due-soon";
       case "ok":
         return "status-ok";
+      case "out_of_season":
+        return "status-out-of-season";
     }
   }
 

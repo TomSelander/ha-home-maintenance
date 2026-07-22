@@ -96,7 +96,11 @@ class HomeMaintenanceSensor(BinarySensorEntity):
     def is_on(self) -> bool:
         """Return True if the task is overdue."""
         task = self._store.get_task(self._task_id)
-        if task is None or task.last_performed is None:
+        if task is None:
+            return True
+        if not self._is_in_season(task):
+            return False  # Out of season tasks never report overdue
+        if task.last_performed is None:
             return True  # Never performed = overdue
 
         try:
@@ -131,6 +135,8 @@ class HomeMaintenanceSensor(BinarySensorEntity):
             "completion_count": len(task.completion_history) if task.track_history else None,
             "last_completed": task.completion_history[-1] if task.track_history and task.completion_history else None,
             "labels": task.labels,
+            "active_months": task.active_months,
+            "in_season": self._is_in_season(task),
         }
 
     @property
@@ -186,6 +192,13 @@ class HomeMaintenanceSensor(BinarySensorEntity):
     # ------------------------------------------------------------------
     # Helpers
     # ------------------------------------------------------------------
+
+    @staticmethod
+    def _is_in_season(task: HomeMaintenanceTask) -> bool:
+        """Return True if the task is currently within its active months."""
+        if not task.active_months:
+            return True
+        return datetime.now().month in task.active_months
 
     @staticmethod
     def _add_interval(
