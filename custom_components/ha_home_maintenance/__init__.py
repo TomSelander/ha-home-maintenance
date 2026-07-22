@@ -16,6 +16,9 @@ from .const import (
     CONF_SIDEBAR_TITLE,
     DOMAIN,
     NAME,
+    SERVICE_COMPLETE_TASK,
+    SERVICE_CREATE_TASK,
+    SERVICE_MARK_OVERDUE,
     SERVICE_RESET_LAST_PERFORMED,
 )
 from .panel import async_register_panel
@@ -110,35 +113,98 @@ async def async_unload_entry(
     return unload_ok
 
 
+def _resolve_task_ids(hass: HomeAssistant, call: ServiceCall) -> list[str]:
+    """Resolve the task ids targeted by a service call's entity_id(s)."""
+    target = getattr(call, "target", None) or {}
+    entity_ids = target.get("entity_id") or call.data.get("entity_id")
+    if isinstance(entity_ids, str):
+        entity_ids = [entity_ids]
+
+    ent_reg = er.async_get(hass)
+    task_ids = []
+    for entity_id in entity_ids or []:
+        ent_entry = ent_reg.async_get(entity_id)
+        if ent_entry and ent_entry.unique_id:
+            task_ids.append(ent_entry.unique_id.replace(f"{DOMAIN}_", ""))
+    return task_ids
+
+
 def _register_services(hass: HomeAssistant, store: TaskStore) -> None:
     """Register integration services."""
 
     async def handle_reset_last_performed(call: ServiceCall) -> None:
         try:
-            # entity_id may come from call.target (newer HA) or call.data (older HA)
-            target = getattr(call, "target", None) or {}
-            entity_ids = target.get("entity_id") or call.data.get("entity_id")
-            if isinstance(entity_ids, str):
-                entity_ids = [entity_ids]
             date_str = call.data.get(
                 "date", dt_util.now().strftime("%Y-%m-%d")
             )
+            for task_id in _resolve_task_ids(hass, call):
+                await store.async_update_task(
+                    task_id, {"last_performed": date_str}
+                )
+        except Exception:
+            _LOGGER.exception("Error resetting last_performed")
 
-            # Find task by entity unique_id
-            ent_reg = er.async_get(hass)
-            for entity_id in (entity_ids or []):
-                ent_entry = ent_reg.async_get(entity_id)
-                if ent_entry and ent_entry.unique_id:
-                    task_id = ent_entry.unique_id.replace(f"{DOMAIN}_", "")
-                    await store.async_update_task(
-                        task_id, {"last_performed": date_str}
-                    )
+    async def handle_mark_overdue(call: ServiceCall) -> None:
+        try:
+            for task_id in _resolve_task_ids(hass, call):
+                await store.async_update_task(
+                    task_id, {"last_performed": None}
+                )
+        except Exception:
+            _LOGGER.exception("Error marking task overdue")
+
+    async def handle_create_task(call: ServiceCall) -> None:
+        try:
+            title = call.data["title"]
+            if store.get_task_by_title(title) is not None:
+                _LOGGER.debug(
+                    "Task '%s' already exists, skipping create_task", title
+                )
+                return
+
+            task_data: dict[str, object] = {"title": title}
+            for field_name in (
+                "description",
+                "interval_value",
+                "interval_type",
+                "icon",
+                "labels",
+                "notify_when_overdue",
+                "track_history",
+                "tag_id",
+            ):
+                if field_name in call.data:
+                    task_data[field_name] = call.data[field_name]
+            await store.async_add_task(task_data)
         except Exception:
             _LOGGER.exception(
-                "Error resetting last_performed for %s",
-                (getattr(call, "target", None) or {}).get("entity_id") or call.data.get("entity_id"),
+                "Error creating task '%s'", call.data.get("title")
             )
+
+    async def handle_complete_task(call: ServiceCall) -> None:
+        try:
+            title = call.data.get("title")
+            if title:
+                task = store.get_task_by_title(title)
+                if task is None:
+                    _LOGGER.warning(
+                        "No task found with title '%s' to complete", title
+                    )
+                    return
+                await store.async_complete_task(task.id)
+                return
+            for task_id in _resolve_task_ids(hass, call):
+                await store.async_complete_task(task_id)
+        except Exception:
+            _LOGGER.exception("Error completing task")
 
     hass.services.async_register(
         DOMAIN, SERVICE_RESET_LAST_PERFORMED, handle_reset_last_performed
+    )
+    hass.services.async_register(
+        DOMAIN, SERVICE_MARK_OVERDUE, handle_mark_overdue
+    )
+    hass.services.async_register(DOMAIN, SERVICE_CREATE_TASK, handle_create_task)
+    hass.services.async_register(
+        DOMAIN, SERVICE_COMPLETE_TASK, handle_complete_task
     )

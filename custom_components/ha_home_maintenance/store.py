@@ -81,6 +81,14 @@ class TaskStore:
         """Return a single task by id, or None."""
         return self._tasks.get(task_id)
 
+    def get_task_by_title(self, title: str) -> HomeMaintenanceTask | None:
+        """Return the first task with a matching title (case-insensitive), or None."""
+        title_lower = title.strip().lower()
+        for task in self._tasks.values():
+            if task.title.strip().lower() == title_lower:
+                return task
+        return None
+
     async def async_add_task(
         self, task_data: dict[str, Any]
     ) -> HomeMaintenanceTask:

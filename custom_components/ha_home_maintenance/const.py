@@ -23,3 +23,6 @@ INTERVAL_MONTHS = "months"
 
 # Service constants
 SERVICE_RESET_LAST_PERFORMED = "reset_last_performed"
+SERVICE_MARK_OVERDUE = "mark_overdue"
+SERVICE_CREATE_TASK = "create_task"
+SERVICE_COMPLETE_TASK = "complete_task"

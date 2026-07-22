@@ -18,6 +18,7 @@ Track recurring home maintenance tasks with a beautiful sidebar panel built righ
 - **Binary sensors for overdue detection** — one sensor per task and one global "any overdue" sensor for use in automations and dashboards
 - **Button entities** — one 'Complete' button per task for use on dashboards
 - **NFC tag support** — scan an NFC tag to instantly mark a task complete
+- **Automation-friendly services** — `create_task`, `complete_task`, and `mark_overdue` services for driving tasks entirely from automations (e.g. sensor-triggered one-time tasks)
 - **Mobile sidebar menu** — hamburger menu button in the panel header on narrow/mobile viewports, matching the behavior of built-in HA panels like HACS and ESPHome
 - **Configurable sidebar** — choose a custom panel title and optionally restrict access to admins only
 - **Integration icon** — branded icon displayed in the Home Assistant integrations page
@@ -224,6 +225,8 @@ name: Mark HVAC Filter Done
 icon: mdi:check-circle
 ```
 
+Because it's a standard `button` entity, `button.press` can also be called from an automation — so any switch, NFC tag, or sensor state change can mark a task complete without touching the panel.
+
 ---
 
 ## Automations
@@ -246,6 +249,62 @@ automation:
       data:
         title: "Home Maintenance Pro Overdue"
         message: "One or more home maintenance tasks need attention."
+```
+
+### Completing a Task from an Automation
+
+Call `button.press` against the task's `button.<task>_complete` entity from any automation, triggered by a physical button, a switch, or a sensor state:
+
+```yaml
+automation:
+  alias: "Mark driveway shoveled from a smart button"
+  trigger:
+    - platform: device
+      device_id: your_smart_button_device_id
+      domain: button
+      type: press
+  action:
+    - service: button.press
+      target:
+        entity_id: button.shovel_driveway_complete
+```
+
+### Services
+
+The integration also exposes services for automations that need more than `button.press`:
+
+| Service | Purpose |
+|---|---|
+| `ha_home_maintenance.reset_last_performed` | Set a task's last-performed date to a specific date (defaults to today). Targets the task's `binary_sensor` entity. |
+| `ha_home_maintenance.mark_overdue` | Force a task to become overdue immediately, e.g. when a sensor reports a fault. Targets the task's `binary_sensor` entity. |
+| `ha_home_maintenance.create_task` | Create a new task from an automation. Takes a `title` plus the same optional fields as the create form (`description`, `interval_value`, `interval_type`, `icon`, `labels`, `notify_when_overdue`, `track_history`, `tag_id`). If a task with the same title already exists, this is a no-op — safe to call repeatedly from a flapping sensor. |
+| `ha_home_maintenance.complete_task` | Mark a task complete. Accepts either an entity target or a `title` field — the `title` form is useful for a task created dynamically via `create_task`, since its entity id isn't known ahead of time. |
+
+**Example — create a task when a sensor reports a fault, complete it when the sensor recovers:**
+
+```yaml
+automation:
+  - alias: "Create filter-replacement task when purifier filter is empty"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.air_purifier_filter_life
+        below: 1
+    action:
+      - service: ha_home_maintenance.create_task
+        data:
+          title: "Replace air purifier filter"
+          icon: "mdi:air-filter"
+          notify_when_overdue: true
+
+  - alias: "Complete filter-replacement task when purifier filter is refilled"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.air_purifier_filter_life
+        above: 99
+    action:
+      - service: ha_home_maintenance.complete_task
+        data:
+          title: "Replace air purifier filter"
 ```
 
 ---
