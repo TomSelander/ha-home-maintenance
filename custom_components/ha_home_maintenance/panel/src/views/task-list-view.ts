@@ -259,31 +259,10 @@ export class TaskListView extends LitElement {
   }
 
   private _getNextDueTimestamp(task: Task): number {
-    if (!task.last_performed) {
+    if (!task.next_due) {
       return 0; // Never performed sorts first (most urgent)
     }
-    const lastDate = this._parseLocalDate(task.last_performed);
-    const dueDate = new Date(lastDate);
-    switch (task.interval_type) {
-      case "days":
-        dueDate.setDate(dueDate.getDate() + task.interval_value);
-        break;
-      case "weeks":
-        dueDate.setDate(dueDate.getDate() + task.interval_value * 7);
-        break;
-      case "months":
-        dueDate.setMonth(dueDate.getMonth() + task.interval_value);
-        break;
-    }
-    return dueDate.getTime();
-  }
-
-  private _getNextDueString(task: Task): string {
-    if (!task.last_performed) {
-      return localize("never", this.hass?.language);
-    }
-    const ts = this._getNextDueTimestamp(task);
-    return new Date(ts).toLocaleDateString();
+    return this._parseLocalDate(task.next_due).getTime();
   }
 
   private _isInSeason(task: Task): boolean {
@@ -655,7 +634,7 @@ export class TaskListView extends LitElement {
         </div>
         <div>${this._formatInterval(task)}</div>
         <div class="hide-medium">${this._formatDate(task.last_performed)}</div>
-        <div class="hide-medium">${this._getNextDueString(task)}</div>
+        <div class="hide-medium">${this._formatDate(task.next_due)}</div>
         <div class="hide-medium task-labels">
           ${task.labels && task.labels.length > 0
             ? task.labels.map((id) => this._renderLabelChip(id))

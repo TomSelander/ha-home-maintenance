@@ -6,8 +6,10 @@ import contextlib
 import logging
 import uuid
 from dataclasses import asdict, dataclass, field
+from datetime import date
 from typing import Any
 
+from dateutil.relativedelta import relativedelta
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
@@ -35,6 +37,17 @@ class HomeMaintenanceTask:
     track_history: bool = False
     completion_history: list[str] = field(default_factory=list)
     active_months: list[int] = field(default_factory=list)  # 1-12; empty = year-round
+
+
+def calculate_next_due(task: HomeMaintenanceTask) -> date | None:
+    """Return calculated next due date for the given task."""
+    if not task.last_performed:
+        return None
+    last = dt_util.parse_date(task.last_performed)
+    if last is None:
+        return None
+    unit = task.interval_type if task.interval_type in {"days", "weeks", "months"} else "days"
+    return last + relativedelta(**{unit: task.interval_value})
 
 
 class TaskStore:
