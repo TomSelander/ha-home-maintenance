@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -11,9 +11,10 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_time_interval
+from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, NAME, VERSION
-from .store import HomeMaintenanceTask, TaskStore
+from .store import HomeMaintenanceTask, TaskStore, calculate_next_due
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -103,17 +104,15 @@ class HomeMaintenanceSensor(BinarySensorEntity):
         if task.last_performed is None:
             return True  # Never performed = overdue
 
-        try:
-            last = datetime.strptime(task.last_performed, "%Y-%m-%d")
-        except (ValueError, TypeError):
+        next_due = calculate_next_due(task)
+        if next_due is None:
             _LOGGER.warning(
                 "Invalid last_performed date '%s' for task '%s'",
                 task.last_performed,
                 task.title,
             )
             return True
-        due = self._add_interval(last, task.interval_type, task.interval_value)
-        return datetime.now() >= due
+        return dt_util.now().date() >= next_due
 
     @property
     def extra_state_attributes(self) -> dict:
@@ -122,12 +121,12 @@ class HomeMaintenanceSensor(BinarySensorEntity):
         if task is None:
             return {}
 
-        next_due = self._calculate_next_due(task)
+        next_due = calculate_next_due(task)
         return {
             "title": task.title,
             "description": task.description,
             "last_performed": task.last_performed,
-            "next_due": next_due,
+            "next_due": next_due.isoformat() if next_due else None,
             "interval": f"{task.interval_value} {task.interval_type}",
             "icon": task.icon,
             "tag_id": task.tag_id,
@@ -198,29 +197,4 @@ class HomeMaintenanceSensor(BinarySensorEntity):
         """Return True if the task is currently within its active months."""
         if not task.active_months:
             return True
-        return datetime.now().month in task.active_months
-
-    @staticmethod
-    def _add_interval(
-        base: datetime, interval_type: str, interval_value: int
-    ) -> datetime:
-        """Return base + interval."""
-        if interval_type == "days":
-            return base + timedelta(days=interval_value)
-        if interval_type == "weeks":
-            return base + timedelta(weeks=interval_value)
-        if interval_type == "months":
-            # Approximate months as 30 days
-            return base + timedelta(days=interval_value * 30)
-        return base + timedelta(days=interval_value)
-
-    def _calculate_next_due(self, task: HomeMaintenanceTask) -> str | None:
-        """Return the next-due date as an ISO string, or None."""
-        if task.last_performed is None:
-            return None
-        try:
-            last = datetime.strptime(task.last_performed, "%Y-%m-%d")
-        except (ValueError, TypeError):
-            return None
-        due = self._add_interval(last, task.interval_type, task.interval_value)
-        return due.strftime("%Y-%m-%d")
+        return dt_util.now().month in task.active_months

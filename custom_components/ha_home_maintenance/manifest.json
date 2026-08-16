@@ -8,5 +8,5 @@
   "documentation": "https://github.com/TomSelander/ha-home-maintenance",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/TomSelander/ha-home-maintenance/issues",
-  "requirements": []
+  "requirements": ["python-dateutil"]
 }
