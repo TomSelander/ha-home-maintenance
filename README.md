@@ -22,6 +22,7 @@ Track recurring home maintenance tasks with a beautiful sidebar panel built righ
 - **Mobile sidebar menu** — hamburger menu button in the panel header on narrow/mobile viewports, matching the behavior of built-in HA panels like HACS and ESPHome
 - **Configurable sidebar** — choose a custom panel title and optionally restrict access to admins only
 - **Integration icon** — branded icon displayed in the Home Assistant integrations page
+- **Localized panel UI** — the sidebar panel (task list, buttons, template browser) follows your Home Assistant profile language, not just the config/options flow; currently ships with English and German UI/category strings (template titles and descriptions fall back to English), with any missing key falling back to English automatically
 
 ---
 
