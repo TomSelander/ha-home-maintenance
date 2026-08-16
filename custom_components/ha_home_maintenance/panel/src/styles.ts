@@ -473,6 +473,12 @@ export const sharedStyles = css`
 
   .label-picker-chip.selected {
     border-color: transparent;
+    background: var(--primary-color);
+    color: var(--text-primary-color, #fff);
+  }
+
+  .label-picker-chip.selected:hover {
+    background: var(--primary-color);
   }
 
   .label-picker-empty {

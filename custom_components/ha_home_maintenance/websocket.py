@@ -10,7 +10,7 @@ from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant
 
 from .const import CONF_ADMIN_ONLY, CONF_SIDEBAR_TITLE, DOMAIN
-from .store import TaskStore
+from .store import HomeMaintenanceTask, TaskStore, calculate_next_due
 from .templates import TASK_TEMPLATES
 
 _NOT_READY = "not_ready"
@@ -37,6 +37,12 @@ def _get_store(hass: HomeAssistant) -> TaskStore | None:
     return domain_data.get("store")
 
 
+def _task_payload(task: HomeMaintenanceTask) -> dict[str, Any]:
+    """Return the task payload for the panel, including calculated next due date."""
+    next_due = calculate_next_due(task)
+    return {**asdict(task), "next_due": next_due.isoformat() if next_due else None}
+
+
 # --------------------------------------------------------------------------
 # Get all tasks
 # --------------------------------------------------------------------------
@@ -57,7 +63,7 @@ async def ws_get_tasks(
         connection.send_error(msg["id"], _NOT_READY, _NOT_READY_MSG)
         return
     tasks = store.get_all_tasks()
-    connection.send_result(msg["id"], [asdict(t) for t in tasks])
+    connection.send_result(msg["id"], [_task_payload(t) for t in tasks])
 
 
 # --------------------------------------------------------------------------
@@ -84,7 +90,7 @@ async def ws_get_task(
     if task is None:
         connection.send_error(msg["id"], "not_found", "Task not found")
         return
-    connection.send_result(msg["id"], asdict(task))
+    connection.send_result(msg["id"], _task_payload(task))
 
 
 # --------------------------------------------------------------------------
@@ -133,7 +139,7 @@ async def ws_add_task(
     if "last_performed" in msg:
         task_data["last_performed"] = msg["last_performed"]
     task = await store.async_add_task(task_data)
-    connection.send_result(msg["id"], asdict(task))
+    connection.send_result(msg["id"], _task_payload(task))
 
 
 # --------------------------------------------------------------------------
@@ -187,7 +193,7 @@ async def ws_update_task(
     if task is None:
         connection.send_error(msg["id"], "not_found", "Task not found")
         return
-    connection.send_result(msg["id"], asdict(task))
+    connection.send_result(msg["id"], _task_payload(task))
 
 
 # --------------------------------------------------------------------------
@@ -214,7 +220,7 @@ async def ws_complete_task(
     if task is None:
         connection.send_error(msg["id"], "not_found", "Task not found")
         return
-    connection.send_result(msg["id"], asdict(task))
+    connection.send_result(msg["id"], _task_payload(task))
 
 
 # --------------------------------------------------------------------------
