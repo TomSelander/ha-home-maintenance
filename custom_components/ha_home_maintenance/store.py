@@ -10,9 +10,13 @@ from datetime import date
 from typing import Any
 
 from dateutil.relativedelta import relativedelta
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
+
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -150,6 +154,17 @@ class TaskStore:
         """Remove a task. Returns True if deleted, False if not found."""
         if task_id in self._tasks:
             del self._tasks[task_id]
+
+            # remove the task's entities from the HA registry
+            ent_reg = er.async_get(self._hass)
+            for platform, unique_id in (
+                (Platform.BINARY_SENSOR, f"{DOMAIN}_{task_id}"),
+                (Platform.BUTTON, f"{DOMAIN}_{task_id}_complete"),
+            ):
+                entity_id = ent_reg.async_get_entity_id(platform, DOMAIN, unique_id)
+                if entity_id:
+                    ent_reg.async_remove(entity_id)
+
             await self.async_save()
             self._notify_listeners()
             return True
