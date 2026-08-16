@@ -14,6 +14,7 @@ export interface Task {
   track_history: boolean;
   completion_history: string[];
   active_months: number[];
+  next_due: string | null;
 }
 
 export interface TaskTemplate {

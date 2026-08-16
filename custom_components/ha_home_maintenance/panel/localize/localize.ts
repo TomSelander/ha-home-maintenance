@@ -1,18 +1,27 @@
 import * as en from "../../translations/en.json";
+import * as de from "../../translations/de.json";
 import { TaskTemplate } from "../src/types";
 
 type Translation = { panel?: Record<string, string> };
 
 const languages: Record<string, Translation> = {
   en: en as unknown as Translation,
+  de: de as unknown as Translation,
 };
 
 const DEFAULT_LANG = "en";
 
+// hass.language can arrive as a bare language code ("de") or a
+// language-region tag ("de-DE" / "de_DE"); normalize before lookup.
+function normalizeLang(lang?: string): string {
+  return (lang || DEFAULT_LANG).toLowerCase().split(/[-_]/)[0];
+}
+
 export function localize(key: string, lang: string = DEFAULT_LANG): string {
-  const translation = languages[lang] || languages[DEFAULT_LANG];
-  const panel = translation.panel || (languages[DEFAULT_LANG].panel as Record<string, string>);
-  return panel[key] || key;
+  const translation = languages[normalizeLang(lang)] || languages[DEFAULT_LANG];
+  const defaultPanel = languages[DEFAULT_LANG].panel as Record<string, string>;
+  const panel = translation.panel || defaultPanel;
+  return panel[key] || defaultPanel[key] || key;
 }
 
 function toKey(s: string): string {
