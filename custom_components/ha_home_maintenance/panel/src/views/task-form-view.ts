@@ -22,8 +22,8 @@ export class TaskFormView extends LitElement {
   @state() private _tagId = "";
   @state() private _icon = "mdi:toolbox";
   @state() private _labels: string[] = [];
-  @state() private _notifyWhenOverdue = false;
-  @state() private _trackHistory = false;
+  @state() private _notifyWhenOverdue = true;
+  @state() private _trackHistory = true;
   @state() private _activeMonths: number[] = [];
   @state() private _completionHistory: string[] = [];
   @state() private _loading = false;
@@ -59,18 +59,10 @@ export class TaskFormView extends LitElement {
           opacity: 0.5;
           cursor: not-allowed;
         }
-        .icon-preview {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        .icon-preview input {
-          flex: 1;
-        }
-        .icon-preview ha-icon {
-          --mdc-icon-size: 24px;
-          color: var(--secondary-text-color);
-          flex-shrink: 0;
+        .icon-preview ha-icon-picker {
+          display: block;
+          max-width: 300px;
+          --mdc-text-field-fill-color: var(--card-background-color);
         }
         .error-message {
           color: var(--label-badge-red, #f44336);
@@ -236,8 +228,8 @@ export class TaskFormView extends LitElement {
     this._tagId = (e.target as HTMLSelectElement).value;
   }
 
-  private _handleIconInput(e: Event): void {
-    this._icon = (e.target as HTMLInputElement).value;
+  private _handleIconChange(e: CustomEvent<{ value: string }>): void {
+    this._icon = e.detail.value || "";
   }
 
   private _handleNotifyToggle(e: Event): void {
@@ -521,13 +513,12 @@ export class TaskFormView extends LitElement {
                     <div class="form-field">
                       <label>${localize("icon", this.hass?.language)}</label>
                       <div class="icon-preview">
-                        <input
-                          type="text"
+                        <ha-icon-picker
+                          .hass=${this.hass}
                           .value=${this._icon}
-                          @input=${this._handleIconInput}
                           placeholder="mdi:toolbox"
-                        />
-                        <ha-icon .icon=${this._icon}></ha-icon>
+                          @value-changed=${this._handleIconChange}
+                        ></ha-icon-picker>
                       </div>
                     </div>
 

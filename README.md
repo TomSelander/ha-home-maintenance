@@ -23,6 +23,7 @@ Track recurring home maintenance tasks with a beautiful sidebar panel built righ
 - **Configurable sidebar** — choose a custom panel title and optionally restrict access to admins only
 - **Integration icon** — branded icon displayed in the Home Assistant integrations page
 - **Localized panel UI** — the sidebar panel (task list, buttons, template browser) follows your Home Assistant profile language, not just the config/options flow; currently ships with English and German UI/category strings (template titles and descriptions fall back to English), with any missing key falling back to English automatically
+- **Icon picker** — pick a task's icon from Home Assistant's own searchable icon picker (all MDI icons, plus any custom icon sets registered by other integrations) instead of typing a raw MDI icon name, right from the task form's Advanced Settings
 
 ---
 
