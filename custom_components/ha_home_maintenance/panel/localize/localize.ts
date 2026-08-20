@@ -1,5 +1,6 @@
 import * as en from "../../translations/en.json";
 import * as de from "../../translations/de.json";
+import * as fr from "../../translations/fr.json";
 import { TaskTemplate } from "../src/types";
 
 type Translation = { panel?: Record<string, string> };
@@ -7,6 +8,7 @@ type Translation = { panel?: Record<string, string> };
 const languages: Record<string, Translation> = {
   en: en as unknown as Translation,
   de: de as unknown as Translation,
+  fr: fr as unknown as Translation,
 };
 
 const DEFAULT_LANG = "en";
