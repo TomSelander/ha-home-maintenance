@@ -139,6 +139,7 @@ class HomeMaintenanceSensor(BinarySensorEntity):
             "description": task.description,
             "last_performed": task.last_performed,
             "next_due": next_due.isoformat() if next_due else None,
+            "days_until_due": (next_due - dt_util.now().date()).days if next_due else None,
             "interval": f"{task.interval_value} {task.interval_type}",
             "icon": task.icon,
             "tag_id": task.tag_id,
