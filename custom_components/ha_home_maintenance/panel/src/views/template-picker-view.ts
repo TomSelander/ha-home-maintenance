@@ -426,15 +426,7 @@ export class TemplatePickerView extends LitElement {
     const count = template.interval_value;
     const unit = template.interval_type; // "days" | "weeks" | "months"
     const key = `every_${unit}_${count === 1 ? "one" : "other"}`;
-    const result = localize(key, lang);
-    if (result !== key) {
-      return result.replace("{count}", String(count));
-    }
-    // Fallback for languages that don't have the new keys yet
-    return `${localize("every", lang)} ${count} ${localize(
-      unit,
-      lang
-    ).toLowerCase()}`;
+    return localize(key, lang).replace("{count}", String(count));
   }
 
   protected render() {
