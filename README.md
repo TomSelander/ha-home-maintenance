@@ -175,6 +175,7 @@ Every task binary sensor exposes the following attributes for use in automations
 | `description` | string | Task description |
 | `last_performed` | string \| null | ISO date of the last completion (`null` if never performed) |
 | `next_due` | string | ISO date when the task is next due |
+| `days_until_due` | integer \| null | Days until next due (`0` = due today, negative = overdue, `null` if never performed) |
 | `interval` | string | Repeat interval, e.g. `12 months` |
 | `icon` | string | MDI icon name, e.g. `mdi:wrench` |
 | `tag_id` | string \| null | NFC tag ID linked to the task (`null` if none) |
