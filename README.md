@@ -6,24 +6,14 @@ Track recurring home maintenance tasks with a beautiful sidebar panel built righ
 
 ## Features
 
-- **Full CRUD operations** — create, read, update, and delete maintenance tasks
-- **Template library** — 90+ pre-built tasks covering HVAC, plumbing, electrical, exterior, appliances, and more
-- **CSV import/export** — bulk-import tasks from a CSV file via the Browse Templates page, or export all tasks to CSV from the task list
-- **Responsive table view** — sort tasks by name, interval, due date, labels, or status; sort preference is persisted across sessions
-- **Search and filter** — text search across task titles and descriptions, plus multi-label filtering with clickable chips (OR logic — tasks matching any selected label are shown)
-- **Label support** — assign Home Assistant labels to tasks using a visual picker; label colors and icons from HA are shown on chips in the task list and filter bar
-- **Overdue notifications** — enable a per-task toggle to receive a persistent notification automatically when a task becomes overdue
-- **Seasonal tasks** — restrict a task to specific active months (e.g. spring/summer lawn care); outside those months it's shown as "Out of Season" instead of overdue
-- **Completion history** — opt-in per-task tracking of every completion timestamp, with an optional integration-wide cap on how many entries to keep per task
-- **Binary sensors for overdue detection** — one sensor per task and one global "any overdue" sensor for use in automations and dashboards
-- **Button entities** — one 'Complete' button per task for use on dashboards
-- **NFC tag support** — scan an NFC tag to instantly mark a task complete
-- **Automation-friendly services** — `create_task`, `complete_task`, and `mark_overdue` services for driving tasks entirely from automations (e.g. sensor-triggered one-time tasks)
-- **Mobile sidebar menu** — hamburger menu button in the panel header on narrow/mobile viewports, matching the behavior of built-in HA panels like HACS and ESPHome
-- **Configurable sidebar** — choose a custom panel title and optionally restrict access to admins only
-- **Integration icon** — branded icon displayed in the Home Assistant integrations page
-- **Localized panel UI** — the sidebar panel (task list, buttons, template browser) follows your Home Assistant profile language, not just the config/options flow; currently ships with English and German UI/category strings (template titles and descriptions fall back to English), with any missing key falling back to English automatically
-- **Icon picker** — pick a task's icon from Home Assistant's own searchable icon picker (all MDI icons, plus any custom icon sets registered by other integrations) instead of typing a raw MDI icon name, right from the task form's Advanced Settings
+- **Template library & CSV import/export** — 90+ pre-built tasks covering HVAC, plumbing, electrical, exterior, and more; bulk-import or export your own via CSV
+- **Search, filter & labels** — filter tasks by title/description or by Home Assistant labels with clickable chips
+- **Overdue notifications** — optional per-task persistent notification when a task becomes overdue
+- **Seasonal tasks** — restrict a task to specific active months (e.g. spring/summer lawn care) instead of flagging it overdue year-round
+- **Completion history** — opt-in per-task log of every completion, with an optional cap on how many entries to keep
+- **NFC tag support** — scan a tag to mark a task complete instantly
+- **Automation-friendly** — a binary sensor and complete-button per task, a global "any overdue" sensor, and `create_task`/`complete_task`/`mark_overdue` services
+- **Localized, configurable panel** — sidebar UI follows your Home Assistant profile language (English/German, falling back to English), with a configurable title and optional admin-only access
 
 ---
 
@@ -61,6 +51,7 @@ After the integration is set up, you can adjust its options at any time via **Se
 |---|---|---|
 | `admin_only` | `true` | Restrict the sidebar panel to admin users only |
 | `sidebar_title` | `"Maintenance"` | The title displayed in the sidebar navigation |
+| `max_completion_history` | `0` (unlimited) | Oldest completion-history entries are dropped once a task exceeds this count |
 
 ---
 
@@ -163,9 +154,7 @@ Each task has a **Notify when overdue** toggle on the create/edit form. When ena
 
 ### Completion History
 
-Each task has a **Track completion history** toggle on the create/edit form. It is off by default. When enabled, every time a task is marked complete a timestamp is recorded. When editing a task with history tracking on, the edit form shows a scrollable **Completion History** section listing the most recent completions (newest first).
-
-By default the history is unbounded. If you'd rather cap it, set **Max completion history per task** in the integration's Options (Settings → Devices & Services → Home Maintenance Pro → Configure) to the number of entries to keep; the oldest entries are dropped once a task's history exceeds that number. Leave it at `0` for no limit.
+Each task has a **Track completion history** toggle on the create/edit form (off by default). When enabled, every completion is timestamped and shown in a scrollable **Completion History** section (newest first) on the edit form. History is unbounded by default — cap it per the `max_completion_history` option above if you'd rather trim old entries.
 
 ### Entity Attributes
 
