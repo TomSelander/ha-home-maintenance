@@ -197,6 +197,12 @@ class HomeMaintenanceSensor(BinarySensorEntity):
                     "notification_id": f"{DOMAIN}_{self._task_id}_overdue",
                 },
             )
+        elif not is_overdue and self._was_overdue:
+            await self.hass.services.async_call(
+                "persistent_notification",
+                "dismiss",
+                {"notification_id": f"{DOMAIN}_{self._task_id}_overdue"},
+            )
         self._was_overdue = is_overdue
         self.async_write_ha_state()
 
