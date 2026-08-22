@@ -15,8 +15,10 @@ from homeassistant.core import callback  # type: ignore[import-untyped]
 
 from .const import (
     CONF_ADMIN_ONLY,
+    CONF_MAX_COMPLETION_HISTORY,
     CONF_SIDEBAR_TITLE,
     DEFAULT_ADMIN_ONLY,
+    DEFAULT_MAX_COMPLETION_HISTORY,
     DEFAULT_SIDEBAR_TITLE,
     DOMAIN,
 )
@@ -76,6 +78,13 @@ class HaHomeMaintenanceOptionsFlow(OptionsFlow):
                             CONF_SIDEBAR_TITLE, DEFAULT_SIDEBAR_TITLE
                         ),
                     ): str,
+                    vol.Required(
+                        CONF_MAX_COMPLETION_HISTORY,
+                        default=self.config_entry.options.get(
+                            CONF_MAX_COMPLETION_HISTORY,
+                            DEFAULT_MAX_COMPLETION_HISTORY,
+                        ),
+                    ): vol.All(vol.Coerce(int), vol.Range(min=0)),
                 }
             ),
         )

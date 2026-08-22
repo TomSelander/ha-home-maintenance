@@ -15,8 +15,10 @@ from homeassistant.util import dt as dt_util
 
 from .const import (
     CONF_ADMIN_ONLY,
+    CONF_MAX_COMPLETION_HISTORY,
     CONF_SIDEBAR_TITLE,
     DEFAULT_ADMIN_ONLY,
+    DEFAULT_MAX_COMPLETION_HISTORY,
     DEFAULT_SIDEBAR_TITLE,
     DOMAIN,
     NAME,
@@ -43,7 +45,10 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Home Maintenance from a config entry."""
     # Initialize store
-    store = TaskStore(hass)
+    max_completion_history = entry.options.get(
+        CONF_MAX_COMPLETION_HISTORY, DEFAULT_MAX_COMPLETION_HISTORY
+    )
+    store = TaskStore(hass, max_completion_history=max_completion_history)
     await store.async_load()
 
     hass.data[DOMAIN] = {

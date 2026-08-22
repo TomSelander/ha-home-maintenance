@@ -16,11 +16,13 @@
         "title": "Hauswartung Pro Optionen",
         "data": {
           "admin_only": "Nur für Administratoren",
-          "sidebar_title": "Seitenleisten-Titel"
+          "sidebar_title": "Seitenleisten-Titel",
+          "max_completion_history": "Max. Abschlussverlauf pro Aufgabe"
         },
         "data_description": {
           "admin_only": "Zugriff auf das Panel auf Admin-Benutzer einschränken.",
-          "sidebar_title": "Titel, der in der Seitenleisten-Navigation angezeigt wird."
+          "sidebar_title": "Titel, der in der Seitenleisten-Navigation angezeigt wird.",
+          "max_completion_history": "Älteste Einträge werden entfernt, sobald der Abschlussverlauf einer Aufgabe diese Anzahl überschreitet. 0 bedeutet unbegrenzt."
         }
       }
     }
