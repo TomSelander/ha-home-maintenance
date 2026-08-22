@@ -473,10 +473,15 @@ export class TaskFormView extends LitElement {
           ${isEdit && (this._trackHistory || this._completionHistory.length > 0)
             ? html`
                 <div class="history-section">
-                  <h3>${localize("completion_history", this.hass?.language)}</h3>
+                  <h3>
+                    ${localize("completion_history", this.hass?.language)}
+                    ${this._completionHistory.length > 0
+                      ? html`<span class="history-count">${this._completionHistory.length}</span>`
+                      : nothing}
+                  </h3>
                   ${this._completionHistory.length > 0
                     ? html`<ul class="history-list">
-                        ${this._completionHistory.slice().reverse().slice(0, 20).map(
+                        ${this._completionHistory.slice().reverse().map(
                           (date) => html`<li>${new Date(date).toLocaleString()}</li>`
                         )}
                       </ul>`

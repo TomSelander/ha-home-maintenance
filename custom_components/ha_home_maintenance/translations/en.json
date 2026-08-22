@@ -16,11 +16,13 @@
         "title": "Home Maintenance Pro Options",
         "data": {
           "admin_only": "Admin only",
-          "sidebar_title": "Sidebar title"
+          "sidebar_title": "Sidebar title",
+          "max_completion_history": "Max completion history per task"
         },
         "data_description": {
           "admin_only": "Restrict panel access to admin users only.",
-          "sidebar_title": "Title shown in the sidebar navigation."
+          "sidebar_title": "Title shown in the sidebar navigation.",
+          "max_completion_history": "Oldest entries are dropped once a task's completion history exceeds this many entries. Set to 0 for no limit."
         }
       }
     }

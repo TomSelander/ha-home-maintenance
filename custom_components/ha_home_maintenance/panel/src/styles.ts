@@ -545,22 +545,42 @@ export const sharedStyles = css`
   }
 
   .history-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 16px;
     font-weight: 500;
     margin: 0 0 12px;
+  }
+
+  .history-count {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+    background: var(--secondary-background-color);
+    border-radius: 10px;
+    padding: 1px 8px;
   }
 
   .history-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid var(--divider-color);
+    border-radius: 4px;
   }
 
   .history-list li {
-    padding: 8px 0;
+    padding: 8px 12px;
     border-bottom: 1px solid var(--divider-color);
     font-size: 14px;
     color: var(--primary-text-color);
+  }
+
+  .history-list li:last-child {
+    border-bottom: none;
   }
 
   .history-empty {

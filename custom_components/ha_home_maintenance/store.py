@@ -70,11 +70,12 @@ def calculate_next_due(task: HomeMaintenanceTask) -> date | None:
 class TaskStore:
     """Manages persistence of maintenance tasks via HA storage helper."""
 
-    def __init__(self, hass: HomeAssistant) -> None:
+    def __init__(self, hass: HomeAssistant, max_completion_history: int = 0) -> None:
         self._hass = hass
         self._store: Store = Store(hass, STORAGE_VERSION, STORAGE_KEY)
         self._tasks: dict[str, HomeMaintenanceTask] = {}
         self._listeners: list = []
+        self.max_completion_history = max_completion_history
 
     async def async_load(self) -> None:
         """Load tasks from storage."""
@@ -159,6 +160,8 @@ class TaskStore:
         task.last_performed = dt_util.now().strftime("%Y-%m-%d")
         if task.track_history:
             task.completion_history.append(dt_util.now().isoformat())
+            if self.max_completion_history > 0 and len(task.completion_history) > self.max_completion_history:
+                task.completion_history = task.completion_history[-self.max_completion_history :]
         await self.async_save()
         self._notify_listeners()
         return task
