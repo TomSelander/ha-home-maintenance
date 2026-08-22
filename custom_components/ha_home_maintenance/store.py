@@ -51,7 +51,20 @@ def calculate_next_due(task: HomeMaintenanceTask) -> date | None:
     if last is None:
         return None
     unit = task.interval_type if task.interval_type in {"days", "weeks", "months"} else "days"
-    return last + relativedelta(**{unit: task.interval_value})
+    next_due = last + relativedelta(**{unit: task.interval_value})
+    if not task.active_months:
+        return next_due
+
+    # skip inactive months
+    for offset in range(12):
+        if unit == "months":
+            shifted_date = last + relativedelta(months=task.interval_value + offset)
+        else:
+            shifted_date = next_due + relativedelta(months=offset)
+        if shifted_date.month in task.active_months:
+            return shifted_date
+
+    return None
 
 
 class TaskStore:
