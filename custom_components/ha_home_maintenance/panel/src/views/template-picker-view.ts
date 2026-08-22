@@ -421,6 +421,22 @@ export class TemplatePickerView extends LitElement {
     this._searchQuery = (e.target as HTMLInputElement).value;
   }
 
+  private _intervalLabel(template: TaskTemplate): string {
+    const lang = this.hass?.language;
+    const count = template.interval_value;
+    const unit = template.interval_type; // "days" | "weeks" | "months"
+    const key = `every_${unit}_${count === 1 ? "one" : "other"}`;
+    const result = localize(key, lang);
+    if (result !== key) {
+      return result.replace("{count}", String(count));
+    }
+    // Fallback for languages that don't have the new keys yet
+    return `${localize("every", lang)} ${count} ${localize(
+      unit,
+      lang
+    ).toLowerCase()}`;
+  }
+
   protected render() {
     const filtered = this._getFilteredTemplates();
     const grouped = this._groupByCategory(filtered);
@@ -503,8 +519,7 @@ export class TemplatePickerView extends LitElement {
                                     ${localizeTemplateDesc(template, this.hass?.language)}
                                   </div>
                                   <div class="template-interval">
-                                    Every ${template.interval_value}
-                                    ${localize(template.interval_type, this.hass?.language).toLowerCase()}
+                                    ${this._intervalLabel(template)}
                                   </div>
                                 </div>
                               `
