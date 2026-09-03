@@ -17,12 +17,14 @@
         "data": {
           "admin_only": "Admin only",
           "sidebar_title": "Sidebar title",
-          "max_completion_history": "Max completion history per task"
+          "max_completion_history": "Max completion history per task",
+          "create_aggregate_sensor": "Create aggregate overdue sensor"
         },
         "data_description": {
           "admin_only": "Restrict panel access to admin users only.",
           "sidebar_title": "Title shown in the sidebar navigation.",
-          "max_completion_history": "Oldest entries are dropped once a task's completion history exceeds this many entries. Set to 0 for no limit."
+          "max_completion_history": "Oldest entries are dropped once a task's completion history exceeds this many entries. Set to 0 for no limit.",
+          "create_aggregate_sensor": "Create a sensor that is on when any maintenance task is overdue."
         }
       }
     }

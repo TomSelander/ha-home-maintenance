@@ -15,9 +15,11 @@ from homeassistant.core import callback  # type: ignore[import-untyped]
 
 from .const import (
     CONF_ADMIN_ONLY,
+    CONF_CREATE_AGGREGATE_SENSOR,
     CONF_MAX_COMPLETION_HISTORY,
     CONF_SIDEBAR_TITLE,
     DEFAULT_ADMIN_ONLY,
+    DEFAULT_CREATE_AGGREGATE_SENSOR,
     DEFAULT_MAX_COMPLETION_HISTORY,
     DEFAULT_SIDEBAR_TITLE,
     DOMAIN,
@@ -85,6 +87,13 @@ class HaHomeMaintenanceOptionsFlow(OptionsFlow):
                             DEFAULT_MAX_COMPLETION_HISTORY,
                         ),
                     ): vol.All(vol.Coerce(int), vol.Range(min=0)),
+                    vol.Required(
+                        CONF_CREATE_AGGREGATE_SENSOR,
+                        default=self.config_entry.options.get(
+                            CONF_CREATE_AGGREGATE_SENSOR,
+                            DEFAULT_CREATE_AGGREGATE_SENSOR,
+                        ),
+                    ): bool,
                 }
             ),
         )

@@ -17,12 +17,14 @@
         "data": {
           "admin_only": "Administrateurs uniquement",
           "sidebar_title": "Titre dans la barre latérale",
-          "max_completion_history": "Historique d'achèvement maximal par tâche"
+          "max_completion_history": "Historique d'achèvement maximal par tâche",
+          "create_aggregate_sensor": "Créer le capteur global des tâches en retard"
         },
         "data_description": {
           "admin_only": "Restreindre l'accès au panneau aux administrateurs uniquement.",
           "sidebar_title": "Titre affiché dans la barre latérale.",
-          "max_completion_history": "Les entrées les plus anciennes sont supprimées lorsque l'historique d'achèvement d'une tâche dépasse ce nombre. Mettre 0 pour aucune limite."
+          "max_completion_history": "Les entrées les plus anciennes sont supprimées lorsque l'historique d'achèvement d'une tâche dépasse ce nombre. Mettre 0 pour aucune limite.",
+          "create_aggregate_sensor": "Créer un capteur activé lorsqu'une tâche d'entretien est en retard."
         }
       }
     }
