@@ -99,6 +99,8 @@
     "done": "Fertig",
     "no_results": "Keine Vorlagen entsprechen deiner Suche.",
     "notify_when_overdue": "Bei Überfälligkeit benachrichtigen",
+    "notification_overdue_title": "Wartung überfällig",
+    "notification_overdue_message": "„{title}“ ist überfällig und muss erledigt werden.",
     "export_csv": "CSV exportieren",
     "sort_by": "Sortieren nach",
     "clear": "Zurücksetzen",

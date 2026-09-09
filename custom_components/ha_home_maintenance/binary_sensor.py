@@ -17,6 +17,7 @@ from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, NAME, VERSION
+from .localize import localize
 from .store import HomeMaintenanceTask, TaskStore, calculate_next_due
 
 _LOGGER = logging.getLogger(__name__)
@@ -193,8 +194,10 @@ class HomeMaintenanceSensor(BinarySensorEntity):
                 "persistent_notification",
                 "create",
                 {
-                    "title": "Maintenance Overdue",
-                    "message": f'"{task.title}" is overdue and needs attention.',
+                    "title": localize(self.hass, "notification_overdue_title"),
+                    "message": localize(
+                        self.hass, "notification_overdue_message", title=task.title
+                    ),
                     "notification_id": f"{DOMAIN}_{self._task_id}_overdue",
                 },
             )

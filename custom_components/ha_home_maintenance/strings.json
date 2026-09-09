@@ -92,6 +92,8 @@
     "done": "Done",
     "no_results": "No templates match your search.",
     "notify_when_overdue": "Notify when overdue",
+    "notification_overdue_title": "Maintenance Overdue",
+    "notification_overdue_message": "\"{title}\" is overdue and needs attention.",
     "export_csv": "Export CSV",
     "sort_by": "Sort by",
     "clear": "Clear",
