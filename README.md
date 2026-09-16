@@ -52,6 +52,7 @@ After the integration is set up, you can adjust its options at any time via **Se
 | `admin_only` | `true` | Restrict the sidebar panel to admin users only |
 | `sidebar_title` | `"Maintenance"` | The title displayed in the sidebar navigation |
 | `max_completion_history` | `0` (unlimited) | Oldest completion-history entries are dropped once a task exceeds this count |
+| `create_aggregate_sensor` | `true` | Create `binary_sensor.home_maintenance_any_overdue`, which is on when any task is overdue |
 
 ---
 

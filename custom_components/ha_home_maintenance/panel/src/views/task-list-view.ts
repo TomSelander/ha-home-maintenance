@@ -634,7 +634,13 @@ export class TaskListView extends LitElement {
         </div>
         <div>${this._formatInterval(task)}</div>
         <div class="hide-medium">${this._formatDate(task.last_performed)}</div>
-        <div class="hide-medium">${this._formatDate(task.next_due)}</div>
+        <div
+          class="hide-medium ${status === "overdue" && task.next_due
+            ? "due-overdue"
+            : ""}"
+        >
+          ${this._formatDate(task.next_due)}
+        </div>
         <div class="hide-medium task-labels">
           ${task.labels && task.labels.length > 0
             ? task.labels.map((id) => this._renderLabelChip(id))

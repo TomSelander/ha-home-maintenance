@@ -17,12 +17,14 @@
         "data": {
           "admin_only": "Nur für Administratoren",
           "sidebar_title": "Seitenleisten-Titel",
-          "max_completion_history": "Max. Abschlussverlauf pro Aufgabe"
+          "max_completion_history": "Max. Abschlussverlauf pro Aufgabe",
+          "create_aggregate_sensor": "Aggregierten Sensor für überfällige Aufgaben erstellen"
         },
         "data_description": {
           "admin_only": "Zugriff auf das Panel auf Admin-Benutzer einschränken.",
           "sidebar_title": "Titel, der in der Seitenleisten-Navigation angezeigt wird.",
-          "max_completion_history": "Älteste Einträge werden entfernt, sobald der Abschlussverlauf einer Aufgabe diese Anzahl überschreitet. 0 bedeutet unbegrenzt."
+          "max_completion_history": "Älteste Einträge werden entfernt, sobald der Abschlussverlauf einer Aufgabe diese Anzahl überschreitet. 0 bedeutet unbegrenzt.",
+          "create_aggregate_sensor": "Einen Sensor erstellen, der aktiv ist, wenn eine Wartungsaufgabe überfällig ist."
         }
       }
     }

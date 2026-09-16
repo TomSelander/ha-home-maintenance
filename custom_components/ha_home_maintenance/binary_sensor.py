@@ -11,12 +11,19 @@ from homeassistant.components.binary_sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.util import dt as dt_util
 
-from .const import DOMAIN, NAME, VERSION
+from .const import (
+    CONF_CREATE_AGGREGATE_SENSOR,
+    DEFAULT_CREATE_AGGREGATE_SENSOR,
+    DOMAIN,
+    NAME,
+    VERSION,
+)
 from .localize import localize
 from .store import HomeMaintenanceTask, TaskStore, calculate_next_due
 
@@ -44,7 +51,19 @@ async def async_setup_entry(
         HomeMaintenanceSensor(store, task, entry)
         for task in store.get_all_tasks()
     ]
-    entities.append(HomeMaintenanceAnyOverdueSensor(store, entry))
+    create_aggregate_sensor = entry.options.get(
+        CONF_CREATE_AGGREGATE_SENSOR, DEFAULT_CREATE_AGGREGATE_SENSOR
+    )
+    if create_aggregate_sensor:
+        entities.append(HomeMaintenanceAnyOverdueSensor(store, entry))
+    else:
+        # Remove the entity if this option was disabled after it was created.
+        entity_registry = er.async_get(hass)
+        aggregate_entity_id = entity_registry.async_get_entity_id(
+            "binary_sensor", DOMAIN, f"{DOMAIN}_any_overdue"
+        )
+        if aggregate_entity_id:
+            entity_registry.async_remove(aggregate_entity_id)
     async_add_entities(entities)
 
     # Listen for store changes to add/remove sensors

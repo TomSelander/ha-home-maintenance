@@ -4,7 +4,7 @@ from __future__ import annotations
 
 DOMAIN = "ha_home_maintenance"
 NAME = "Home Maintenance Pro"
-VERSION = "1.12.1"
+VERSION = "1.13.0"
 
 # Panel constants
 PANEL_URL = "/api/panel_custom/ha_home_maintenance"
@@ -16,9 +16,11 @@ PANEL_NAME = "ha-home-maintenance-panel"
 CONF_ADMIN_ONLY = "admin_only"
 CONF_SIDEBAR_TITLE = "sidebar_title"
 CONF_MAX_COMPLETION_HISTORY = "max_completion_history"
+CONF_CREATE_AGGREGATE_SENSOR = "create_aggregate_sensor"
 DEFAULT_ADMIN_ONLY = True
 DEFAULT_SIDEBAR_TITLE = "Maintenance"
 DEFAULT_MAX_COMPLETION_HISTORY = 0  # 0 = unlimited
+DEFAULT_CREATE_AGGREGATE_SENSOR = True
 
 # Interval type constants
 INTERVAL_DAYS = "days"
