@@ -8,7 +8,7 @@ or keys.
 from __future__ import annotations
 
 import json
-from functools import lru_cache
+from functools import cache
 from pathlib import Path
 
 from homeassistant.core import HomeAssistant
@@ -17,7 +17,7 @@ _TRANSLATIONS_DIR = Path(__file__).parent / "translations"
 _DEFAULT_LANG = "en"
 
 
-@lru_cache(maxsize=None)
+@cache
 def _load_panel_strings(lang: str) -> dict[str, str]:
     path = _TRANSLATIONS_DIR / f"{lang}.json"
     if not path.exists():
