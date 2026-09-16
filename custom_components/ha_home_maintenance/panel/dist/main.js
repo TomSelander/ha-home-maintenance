@@ -113,6 +113,11 @@ var Se=Object.defineProperty;var tt=Object.getOwnPropertyDescriptor;var ce=(i,t)
     color: var(--label-badge-red, #f44336);
   }
 
+  .due-overdue {
+    color: var(--label-badge-red, #f44336);
+    font-weight: 500;
+  }
+
   .status-out-of-season {
     background: rgba(158, 158, 158, 0.12);
     color: var(--label-badge-grey, #9e9e9e);
@@ -831,7 +836,11 @@ var Se=Object.defineProperty;var tt=Object.getOwnPropertyDescriptor;var ce=(i,t)
         </div>
         <div>${this._formatInterval(e)}</div>
         <div class="hide-medium">${this._formatDate(e.last_performed)}</div>
-        <div class="hide-medium">${this._formatDate(e.next_due)}</div>
+        <div
+          class="hide-medium ${r==="overdue"&&e.next_due?"due-overdue":""}"
+        >
+          ${this._formatDate(e.next_due)}
+        </div>
         <div class="hide-medium task-labels">
           ${e.labels&&e.labels.length>0?e.labels.map(n=>this._renderLabelChip(n)):p}
         </div>

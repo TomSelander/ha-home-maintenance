@@ -113,6 +113,11 @@ export const sharedStyles = css`
     color: var(--label-badge-red, #f44336);
   }
 
+  .due-overdue {
+    color: var(--label-badge-red, #f44336);
+    font-weight: 500;
+  }
+
   .status-out-of-season {
     background: rgba(158, 158, 158, 0.12);
     color: var(--label-badge-grey, #9e9e9e);
