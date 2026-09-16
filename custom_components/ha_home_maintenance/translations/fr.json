@@ -99,6 +99,8 @@
     "done": "Terminé",
     "no_results": "Aucun modèle ne correspond à votre recherche.",
     "notify_when_overdue": "Notifier en cas de retard",
+    "notification_overdue_title": "Entretien en retard",
+    "notification_overdue_message": "« {title} » est en retard et nécessite votre attention.",
     "export_csv": "Exporter en CSV",
     "sort_by": "Trier par",
     "clear": "Effacer",
